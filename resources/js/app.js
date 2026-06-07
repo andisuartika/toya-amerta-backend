@@ -18,6 +18,9 @@ import feather from 'feather-icons'
 import 'iconify-icon'
 window.feather = feather
 
+import select2 from 'select2'
+select2(window.$)
+
 
 class App {
   // All Components

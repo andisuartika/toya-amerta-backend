@@ -67,7 +67,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-medium">Pelanggan <span class="text-danger">*</span></label>
-                            <select name="customer_id" id="selectCustomer" class="form-select" required>
+                            <select name="customer_id" id="selectCustomer" class="form-select select2-customer" required>
                                 <option value="">-- Pilih Pelanggan --</option>
                                 @foreach ($unrecorded as $c)
                                     <option value="{{ $c->id }}" {{ old('customer_id') == $c->id ? 'selected' : '' }}>
@@ -245,13 +245,26 @@
 
 @section('script-bottom')
 <script>
+window.addEventListener('load', function () {
 (function () {
     var customerInfoUrl = '{{ route('admin.water-readings.customer-info', ['customer' => '__ID__']) }}';
 
     var prevReading = 0;
     var tariffData  = null;
 
-    document.getElementById('selectCustomer')?.addEventListener('change', function () {
+    // Init select2
+    $('#selectCustomer').select2({
+        placeholder: '-- Cari nama / nomor pelanggan --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function () { return 'Pelanggan tidak ditemukan'; },
+            searching: function () { return 'Mencari...'; },
+        },
+    });
+
+    // Event pakai select2 change
+    $('#selectCustomer').on('change', function () {
         var id = this.value;
         document.getElementById('customerMeta').textContent = '';
         document.getElementById('previousReading').value    = '';
@@ -308,5 +321,6 @@
         });
     });
 }());
+}); // end window.load
 </script>
 @endsection

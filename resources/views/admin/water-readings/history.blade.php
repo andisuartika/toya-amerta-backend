@@ -19,7 +19,7 @@
             <form method="GET" class="row g-2 align-items-end">
                 <div class="col-sm-6">
                     <label class="form-label mb-1 fs-13">Pilih Pelanggan</label>
-                    <select name="customer_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <select name="customer_id" id="selectCustomerHistory" class="form-select form-select-sm">
                         <option value="">-- Pilih Pelanggan --</option>
                         @foreach ($customers as $c)
                             <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>
@@ -143,13 +143,27 @@
 
 @section('script-bottom')
 <script>
-(function () {
+window.addEventListener('load', function () {
+    // Select2 pilih pelanggan — submit form otomatis saat dipilih
+    $('#selectCustomerHistory').select2({
+        placeholder: '-- Cari nama / nomor pelanggan --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function () { return 'Pelanggan tidak ditemukan'; },
+            searching: function () { return 'Mencari...'; },
+        },
+    }).on('change', function () {
+        this.form.submit();
+    });
+
+    // Search tabel riwayat
     document.getElementById('historySearch')?.addEventListener('input', function () {
         var q = this.value.toLowerCase();
         document.querySelectorAll('#historyTable tbody tr').forEach(function (row) {
             row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
     });
-}());
+});
 </script>
 @endsection

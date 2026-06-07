@@ -79,10 +79,15 @@ class WaterReadingController extends Controller
         $customer = Customer::with('tariffRate')->findOrFail($customerId);
         $last     = $this->repo->lastReading($customerId);
 
+        $tariff = $customer->tariffRate;
+
         return response()->json([
             'previous_reading' => $last?->current_reading ?? $customer->initial_meter,
-            'tariff_name'      => $customer->tariffRate?->name,
+            'tariff_name'      => $tariff?->name,
             'zone_name'        => $customer->zone?->name ?? '—',
+            'price_per_m3'     => $tariff?->price_per_m3 ?? 0,
+            'minimum_usage'    => $tariff?->minimum_usage ?? 1,
+            'minimum_charge'   => $tariff?->minimum_charge ?? 0,
         ]);
     }
 }

@@ -52,6 +52,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         // Pencatatan Meteran
         Route::get('water-readings/history',              [WaterReadingController::class, 'history'])->name('water-readings.history');
         Route::get('water-readings/customer/{customer}',  [WaterReadingController::class, 'customerInfo'])->name('water-readings.customer-info');
+        Route::get('water-readings/unrecorded',            [WaterReadingController::class, 'unrecordedCustomers'])->name('water-readings.unrecorded');
         Route::get('water-readings',                      [WaterReadingController::class, 'index'])->name('water-readings.index');
         Route::post('water-readings',                     [WaterReadingController::class, 'store'])->name('water-readings.store');
         Route::delete('water-readings/{waterReading}',   [WaterReadingController::class, 'destroy'])->name('water-readings.destroy');

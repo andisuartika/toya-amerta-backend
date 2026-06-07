@@ -37,7 +37,7 @@ class CustomerRepository implements CustomerRepositoryInterface
             'zone_id'           => $dto->zone_id,
             'tariff_rate_id'    => $dto->tariff_rate_id,
             'installation_date' => $dto->installation_date,
-            'initial_meter'     => $dto->initial_meter,
+            'initial_meter'     => $dto->initial_meter ?? 0,
             'is_active'         => $dto->is_active,
             'notes'             => $dto->notes,
         ]);

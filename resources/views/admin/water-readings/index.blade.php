@@ -65,24 +65,10 @@
                     <form method="POST" action="{{ route('admin.water-readings.store') }}" id="formReading">
                         @csrf
 
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">Pelanggan <span class="text-danger">*</span></label>
-                            <select name="customer_id" id="selectCustomer" class="form-select select2-customer" required>
-                                <option value="">-- Pilih Pelanggan --</option>
-                                @foreach ($unrecorded as $c)
-                                    <option value="{{ $c->id }}" {{ old('customer_id') == $c->id ? 'selected' : '' }}>
-                                        {{ $c->customer_number }} – {{ $c->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('customer_id')<div class="text-danger fs-12 mt-1">{{ $message }}</div>@enderror
-                            <div class="form-text" id="customerMeta"></div>
-                        </div>
-
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <label class="form-label fw-medium">Bulan</label>
-                                <select name="period_month" class="form-select" required>
+                                <label class="form-label fw-medium">Bulan <span class="text-danger">*</span></label>
+                                <select name="period_month" id="inputMonth" class="form-select" required>
                                     @foreach(range(1,12) as $m)
                                         <option value="{{ $m }}" {{ (old('period_month', $month) == $m) ? 'selected' : '' }}>
                                             {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
@@ -92,12 +78,26 @@
                             </div>
                             <div class="col-6">
                                 <label class="form-label fw-medium">Tahun</label>
-                                <select name="period_year" class="form-select" required>
+                                <select name="period_year" id="inputYear" class="form-select" required>
                                     @foreach(range(now()->year, 2020) as $y)
                                         <option value="{{ $y }}" {{ (old('period_year', $year) == $y) ? 'selected' : '' }}>{{ $y }}</option>
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Pelanggan <span class="text-danger">*</span></label>
+                            <select name="customer_id" id="selectCustomer" class="form-select" required>
+                                <option value="">-- Pilih Pelanggan --</option>
+                                @foreach ($unrecorded as $c)
+                                    <option value="{{ $c->id }}" {{ old('customer_id') == $c->id ? 'selected' : '' }}>
+                                        {{ $c->customer_number }} – {{ $c->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('customer_id')<div class="text-danger fs-12 mt-1">{{ $message }}</div>@enderror
+                            <div class="form-text" id="customerMeta"></div>
                         </div>
 
                         <div class="mb-3">
@@ -252,16 +252,49 @@ window.addEventListener('load', function () {
     var prevReading = 0;
     var tariffData  = null;
 
+    var unrecordedUrl = '{{ route('admin.water-readings.unrecorded') }}';
+
+    function initSelect2() {
+        $('#selectCustomer').select2({
+            placeholder: '-- Cari nama / nomor pelanggan --',
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function () { return 'Pelanggan tidak ditemukan'; },
+                searching: function () { return 'Mencari...'; },
+            },
+        });
+    }
+
+    function refreshCustomerDropdown() {
+        var month = document.getElementById('inputMonth').value;
+        var year  = document.getElementById('inputYear').value;
+
+        // Reset pilihan & info
+        $('#selectCustomer').val(null).trigger('change');
+        document.getElementById('customerMeta').textContent   = '';
+        document.getElementById('previousReading').value      = '';
+        document.getElementById('usagePreview').style.display = 'none';
+        prevReading = 0;
+        tariffData  = null;
+
+        fetch(unrecordedUrl + '?month=' + month + '&year=' + year)
+            .then(r => r.json())
+            .then(function (data) {
+                var $sel = $('#selectCustomer');
+                $sel.find('option:not(:first)').remove();
+                data.forEach(function (c) {
+                    $sel.append(new Option(c.customer_number + ' – ' + c.name, c.id));
+                });
+            });
+    }
+
+    // Saat bulan/tahun form input berubah → refresh dropdown pelanggan
+    document.getElementById('inputMonth').addEventListener('change', refreshCustomerDropdown);
+    document.getElementById('inputYear').addEventListener('change', refreshCustomerDropdown);
+
     // Init select2
-    $('#selectCustomer').select2({
-        placeholder: '-- Cari nama / nomor pelanggan --',
-        allowClear: true,
-        width: '100%',
-        language: {
-            noResults: function () { return 'Pelanggan tidak ditemukan'; },
-            searching: function () { return 'Mencari...'; },
-        },
-    });
+    initSelect2();
 
     // Event pakai select2 change
     $('#selectCustomer').on('change', function () {

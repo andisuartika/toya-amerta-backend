@@ -9,6 +9,7 @@ use App\Domain\UseCases\WaterReading\DeleteWaterReadingUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\WaterReadingRequest;
 use App\Models\Customer;
+use App\Models\WaterReading;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,6 +72,25 @@ class WaterReadingController extends Controller
         $customers  = Customer::where('is_active', true)->orderBy('name')->get();
 
         return view('admin.water-readings.history', compact('readings', 'customers', 'customer'));
+    }
+
+    /** AJAX: daftar pelanggan yang belum dicatat pada periode tertentu */
+    public function unrecordedCustomers(Request $request): JsonResponse
+    {
+        $year  = (int) ($request->year  ?? now()->year);
+        $month = (int) ($request->month ?? now()->month);
+
+        $recordedIds = WaterReading::where('period_year', $year)
+            ->where('period_month', $month)
+            ->pluck('customer_id')
+            ->toArray();
+
+        $customers = Customer::where('is_active', true)
+            ->whereNotIn('id', $recordedIds)
+            ->orderBy('name')
+            ->get(['id', 'customer_number', 'name']);
+
+        return response()->json($customers);
     }
 
     /** AJAX: ambil previous_reading dan info pelanggan */

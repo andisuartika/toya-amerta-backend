@@ -62,6 +62,7 @@
                                     <th>Zona</th>
                                     <th>Tarif</th>
                                     <th>Alamat</th>
+                                    <th class="text-end" style="width:100px">Meter Awal</th>
                                     <th class="text-center" style="width:90px">Status</th>
                                     <th class="text-end" style="width:100px">Aksi</th>
                                 </tr>
@@ -82,6 +83,7 @@
                                             {{ $customer->address ?: '—' }}
                                         </span>
                                     </td>
+                                    <td class="text-end text-muted">{{ number_format($customer->initial_meter, 1) }} m³</td>
                                     <td class="text-center">
                                         @if ($customer->is_active)
                                             <span class="badge bg-success-subtle text-success">Aktif</span>
@@ -100,6 +102,7 @@
                                             data-address="{{ $customer->address }}"
                                             data-phone="{{ $customer->phone }}"
                                             data-installation_date="{{ $customer->installation_date }}"
+                                            data-initial_meter="{{ $customer->initial_meter }}"
                                             data-active="{{ $customer->is_active ? '1' : '0' }}"
                                             title="Edit">
                                             <i data-feather="edit-2" style="width:14px;height:14px;" class="text-primary"></i>
@@ -114,7 +117,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">Belum ada data pelanggan</td>
+                                    <td colspan="8" class="text-center text-muted py-4">Belum ada data pelanggan</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -183,6 +186,15 @@
                             <label class="form-label fw-medium">Tanggal Pasang</label>
                             <input type="date" name="installation_date" id="customerInstallDate" class="form-control">
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Meteran Awal (m³)</label>
+                            <div class="input-group">
+                                <input type="number" name="initial_meter" id="customerInitialMeter"
+                                       class="form-control" min="0" step="0.01" value="0" placeholder="0">
+                                <span class="input-group-text">m³</span>
+                            </div>
+                            <div class="form-text">Angka meter saat pertama kali dipasang.</div>
+                        </div>
                         <div class="col-12">
                             <label class="form-label fw-medium">Alamat</label>
                             <textarea name="address" id="customerAddress" class="form-control" rows="2"
@@ -249,9 +261,10 @@
         document.getElementById('customerZone').value        = d.zone_id;
         document.getElementById('customerTariff').value      = d.tariff_rate_id;
         document.getElementById('customerPhone').value       = d.phone || '';
-        document.getElementById('customerInstallDate').value = d.installation_date || '';
-        document.getElementById('customerAddress').value     = d.address || '';
-        document.getElementById('customerActive').checked    = d.active === '1';
+        document.getElementById('customerInstallDate').value  = d.installation_date || '';
+        document.getElementById('customerInitialMeter').value = d.initial_meter || '0';
+        document.getElementById('customerAddress').value      = d.address || '';
+        document.getElementById('customerActive').checked     = d.active === '1';
     });
 
     document.addEventListener('click', function (e) {

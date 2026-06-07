@@ -144,8 +144,9 @@
 @section('script-bottom')
 <script>
 window.addEventListener('load', function () {
-    // Select2 pilih pelanggan — submit form otomatis saat dipilih
-    $('#selectCustomerHistory').select2({
+    // Select2 pilih pelanggan
+    var $sel = $('#selectCustomerHistory');
+    $sel.select2({
         placeholder: '-- Cari nama / nomor pelanggan --',
         allowClear: true,
         width: '100%',
@@ -153,7 +154,10 @@ window.addEventListener('load', function () {
             noResults: function () { return 'Pelanggan tidak ditemukan'; },
             searching: function () { return 'Mencari...'; },
         },
-    }).on('change', function () {
+    });
+
+    // select2:select / select2:unselect hanya terpicu dari interaksi user, bukan saat init
+    $sel.on('select2:select select2:unselect', function () {
         this.form.submit();
     });
 

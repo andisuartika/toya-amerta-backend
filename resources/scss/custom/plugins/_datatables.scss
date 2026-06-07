@@ -1,0 +1,219 @@
+// ══════════════════════════════════════════════════════════════
+//  DataTables — Terintegrasi dengan card Bootstrap 5
+// ══════════════════════════════════════════════════════════════
+
+// Wrapper mengisi seluruh area card
+.dataTables_wrapper.dt-bootstrap5 {
+    padding: 0;
+
+    // ── Toolbar atas: length + search ──────────────────────
+    .dt-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--bs-border-color);
+        background: var(--bs-body-bg);
+
+        // Length dropdown
+        .dt-length {
+            label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 13px;
+                color: var(--bs-secondary-color);
+                margin: 0;
+            }
+            select {
+                display: inline-block;
+                width: auto;
+                height: 32px;
+                padding: 4px 28px 4px 10px;
+                font-size: 13px;
+                border-radius: 6px;
+                border: 1px solid var(--bs-border-color);
+                background-color: var(--bs-body-bg);
+                color: var(--bs-body-color);
+                cursor: pointer;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--bs-primary);
+                    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .12);
+                }
+            }
+        }
+
+        // Search input
+        .dt-search {
+            label { margin: 0; }
+
+            input {
+                height: 32px;
+                min-width: 200px;
+                padding: 4px 12px 4px 34px;
+                font-size: 13px;
+                border: 1px solid var(--bs-border-color);
+                border-radius: 6px;
+                background: var(--bs-body-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+                background-size: 14px;
+                color: var(--bs-body-color);
+                transition: border-color .15s, box-shadow .15s;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--bs-primary);
+                    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .12);
+                }
+                &::placeholder { color: var(--bs-secondary-color); }
+            }
+        }
+    }
+
+    // ── Tabel ──────────────────────────────────────────────
+    table.dataTable {
+        margin: 0 !important;
+        border-collapse: collapse !important;
+        width: 100% !important;
+
+        thead {
+            tr th {
+                padding: 10px 16px;
+                font-size: 11.5px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                color: var(--bs-secondary-color);
+                background: var(--bs-tertiary-bg, #f8f9fa);
+                border-bottom: 1px solid var(--bs-border-color) !important;
+                white-space: nowrap;
+                user-select: none;
+
+                // Sort arrows — hide default, pakai ikon css sederhana
+                &.sorting { cursor: pointer; }
+                &.sorting::after  { content: ' ↕'; opacity: .35; font-size: 10px; }
+                &.sorting_asc::after  { content: ' ↑'; opacity: .7; font-size: 10px; }
+                &.sorting_desc::after { content: ' ↓'; opacity: .7; font-size: 10px; }
+            }
+        }
+
+        tbody {
+            tr {
+                td {
+                    padding: 10px 16px;
+                    font-size: 13.5px;
+                    vertical-align: middle;
+                    color: var(--bs-body-color);
+                    border-bottom: 1px solid var(--bs-border-color-translucent);
+                }
+
+                &:last-child td { border-bottom: none; }
+
+                &:hover td { background: rgba(var(--bs-primary-rgb), .03); }
+            }
+        }
+    }
+
+    // ── Toolbar bawah: info + pagination ───────────────────
+    .dt-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 16px;
+        border-top: 1px solid var(--bs-border-color);
+        background: var(--bs-body-bg);
+
+        .dt-info {
+            font-size: 12.5px;
+            color: var(--bs-secondary-color);
+        }
+
+        .dt-paginate {
+            .pagination {
+                margin: 0;
+                gap: 2px;
+
+                .page-item .page-link {
+                    padding: 0;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 12px;
+                    border-radius: 6px !important;
+                    border-color: var(--bs-border-color);
+                    color: var(--bs-body-color);
+                    transition: all .15s;
+
+                    &:hover {
+                        background: rgba(var(--bs-primary-rgb), .08);
+                        border-color: var(--bs-primary);
+                        color: var(--bs-primary);
+                    }
+                }
+
+                .page-item.active .page-link {
+                    background: var(--bs-primary);
+                    border-color: var(--bs-primary);
+                    color: #fff;
+                    font-weight: 600;
+                }
+
+                .page-item.disabled .page-link { opacity: .4; }
+            }
+        }
+    }
+
+    // Processing overlay
+    .dataTables_processing {
+        background: rgba(var(--bs-body-bg-rgb, 255,255,255), .9) !important;
+        border: none !important;
+        box-shadow: none !important;
+        font-size: 13px;
+        color: var(--bs-secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        z-index: 10;
+    }
+
+    // Empty / zero records
+    td.dataTables_empty {
+        text-align: center;
+        padding: 40px 16px;
+        color: var(--bs-secondary-color);
+        font-size: 13px;
+    }
+}
+
+// Card yang membungkus DataTables harus overflow hidden
+// agar border-radius card terpotong rapi
+.card:has(.dataTables_wrapper),
+.card:has(table.dataTable) {
+    overflow: hidden;
+}
+
+// Filter bar custom (customers, users)
+.dt-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+    font-size: 13px;
+
+    .form-select-sm,
+    .btn-sm {
+        height: 32px;
+        font-size: 13px;
+    }
+}

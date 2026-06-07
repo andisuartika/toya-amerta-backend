@@ -91,8 +91,8 @@
                     </a>
                     <div class="collapse" id="sidebarReadings">
                         <ul class="nav-second-level">
-                            <li><a href="#">Input Meter</a></li>
-                            <li><a href="#">Riwayat Pembacaan</a></li>
+                            <li><a href="{{ route('admin.water-readings.index') }}">Input Meter</a></li>
+                            <li><a href="{{ route('admin.water-readings.history') }}">Riwayat Pembacaan</a></li>
                         </ul>
                     </div>
                 </li>

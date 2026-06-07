@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\WaterReadingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TariffRateController;
 use App\Http\Controllers\Admin\UserController;
@@ -47,6 +48,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::post('customers',                [CustomerController::class, 'store'])->name('customers.store');
         Route::put('customers/{customer}',      [CustomerController::class, 'update'])->name('customers.update');
         Route::delete('customers/{customer}',   [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+        // Pencatatan Meteran
+        Route::get('water-readings/history',              [WaterReadingController::class, 'history'])->name('water-readings.history');
+        Route::get('water-readings/customer/{customer}',  [WaterReadingController::class, 'customerInfo'])->name('water-readings.customer-info');
+        Route::get('water-readings',                      [WaterReadingController::class, 'index'])->name('water-readings.index');
+        Route::post('water-readings',                     [WaterReadingController::class, 'store'])->name('water-readings.store');
+        Route::delete('water-readings/{waterReading}',   [WaterReadingController::class, 'destroy'])->name('water-readings.destroy');
 
         // Pengguna
         Route::get('users',            [UserController::class, 'index'])->name('users.index');

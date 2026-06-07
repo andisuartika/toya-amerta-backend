@@ -17,7 +17,7 @@ readonly class ZoneDTO
             name:        $data['name'],
             code:        strtoupper($data['code']),
             description: $data['description'] ?? null,
-            is_active:   (bool) ($data['is_active'] ?? true),
+            is_active:   (bool) ($data['is_active'] ?? false),
         );
     }
 }

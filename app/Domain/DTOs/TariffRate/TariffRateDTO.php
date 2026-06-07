@@ -19,7 +19,7 @@ readonly class TariffRateDTO
             price_per_m3:   (float) $data['price_per_m3'],
             minimum_charge: (float) $data['minimum_charge'],
             minimum_usage:  (float) $data['minimum_usage'],
-            is_active:      (bool) ($data['is_active'] ?? true),
+            is_active:   (bool) ($data['is_active'] ?? false),
         );
     }
 }

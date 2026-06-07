@@ -20,7 +20,7 @@ readonly class UserDTO
             email:     $data['email'],
             phone:     $data['phone'] ?? null,
             role:      $data['role'],
-            is_active: (bool) ($data['is_active'] ?? true),
+            is_active:   (bool) ($data['is_active'] ?? false),
             password:  $data['password'] ?? null,
         );
     }

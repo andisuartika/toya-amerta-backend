@@ -29,7 +29,7 @@ readonly class CustomerDTO
             tariff_rate_id:    (int) $data['tariff_rate_id'],
             installation_date: $data['installation_date'],
             initial_meter:     (float) ($data['initial_meter'] ?? 0),
-            is_active:         (bool) ($data['is_active'] ?? true),
+            is_active:         (bool) ($data['is_active'] ?? false),
             notes:             $data['notes'] ?? null,
             user_id:           isset($data['user_id']) ? (int) $data['user_id'] : null,
         );

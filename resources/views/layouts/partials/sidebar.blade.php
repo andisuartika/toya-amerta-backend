@@ -107,8 +107,8 @@
                     </a>
                     <div class="collapse" id="sidebarPayments">
                         <ul class="nav-second-level">
-                            <li><a href="#">Konfirmasi Bayar</a></li>
-                            <li><a href="#">Riwayat Pembayaran</a></li>
+                            <li><a href="{{ route('admin.payments.index') }}">Konfirmasi Bayar</a></li>
+                            <li><a href="{{ route('admin.payments.history') }}">Riwayat Pembayaran</a></li>
                         </ul>
                     </div>
                 </li>

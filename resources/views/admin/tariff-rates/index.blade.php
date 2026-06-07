@@ -15,7 +15,7 @@
         </button>
     </div>
 
-    <div class="alert alert-soft-info d-flex gap-2 align-items-start py-2 px-3 fs-13 mb-3">
+    <div class="alert alert-info bg-info-subtle border-0 d-flex gap-2 align-items-start py-2 px-3 fs-13 mb-3">
         <iconify-icon icon="solar:info-circle-bold-duotone" class="fs-18 text-info flex-shrink-0 mt-1"></iconify-icon>
         <span>
             <strong>Formula:</strong>

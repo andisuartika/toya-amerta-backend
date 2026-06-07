@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\WaterReadingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TariffRateController;
@@ -48,6 +49,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::post('customers',                [CustomerController::class, 'store'])->name('customers.store');
         Route::put('customers/{customer}',      [CustomerController::class, 'update'])->name('customers.update');
         Route::delete('customers/{customer}',   [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+        // Pembayaran
+        Route::get('payments/history',       [PaymentController::class, 'history'])->name('payments.history');
+        Route::get('payments',               [PaymentController::class, 'index'])->name('payments.index');
+        Route::post('payments',              [PaymentController::class, 'store'])->name('payments.store');
+        Route::delete('payments/{payment}',  [PaymentController::class, 'destroy'])->name('payments.destroy');
 
         // Pencatatan Meteran
         Route::get('water-readings/history',              [WaterReadingController::class, 'history'])->name('water-readings.history');

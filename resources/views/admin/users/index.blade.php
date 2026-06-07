@@ -36,8 +36,8 @@
                     </select>
                 </div>
                 <div class="col-sm-auto">
-                    <button type="submit" class="btn btn-soft-primary btn-sm px-3">Filter</button>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-soft-secondary btn-sm px-3 ms-1">Reset</a>
+                    <button type="submit" class="btn btn-primary btn-sm px-4"><i data-feather="filter" style="width:13px;height:13px;" class="me-1"></i>Filter</button>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm px-4 ms-1"><i data-feather="x" style="width:13px;height:13px;" class="me-1"></i>Reset</a>
                 </div>
             </form>
         </div>

@@ -8,7 +8,7 @@
             <h4 class="fs-18 fw-semibold m-0">Pencatatan Meteran</h4>
             <p class="text-muted mb-0 fs-13">Input pemakaian air bulanan pelanggan</p>
         </div>
-        <a href="{{ route('admin.water-readings.history') }}" class="btn btn-soft-secondary btn-sm px-3">
+        <a href="{{ route('admin.water-readings.history') }}" class="btn btn-outline-secondary btn-sm px-3">
             <i data-feather="clock" style="width:14px;height:14px;" class="me-1"></i>Riwayat Pembacaan
         </a>
     </div>
@@ -36,7 +36,7 @@
                     </select>
                 </div>
                 <div class="col-sm-auto">
-                    <button type="submit" class="btn btn-soft-primary btn-sm px-3">Tampilkan</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4"><i data-feather="search" style="width:13px;height:13px;" class="me-1"></i>Tampilkan</button>
                 </div>
             </form>
         </div>
@@ -122,7 +122,7 @@
                         </div>
 
                         {{-- Preview pemakaian --}}
-                        <div id="usagePreview" class="alert alert-soft-info py-2 fs-13 mb-3" style="display:none">
+                        <div id="usagePreview" class="alert alert-info bg-info-subtle border-0 py-2 fs-13 mb-3" style="display:none">
                             Pemakaian: <strong id="previewUsage">0</strong> m³ →
                             Est. tagihan: <strong id="previewAmount">Rp 0</strong>
                         </div>

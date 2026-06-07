@@ -8,7 +8,7 @@
             <h4 class="fs-18 fw-semibold m-0">Riwayat Pembacaan Meteran</h4>
             <p class="text-muted mb-0 fs-13">Histori pencatatan per pelanggan</p>
         </div>
-        <a href="{{ route('admin.water-readings.index') }}" class="btn btn-soft-secondary btn-sm px-3">
+        <a href="{{ route('admin.water-readings.index') }}" class="btn btn-outline-secondary btn-sm px-3">
             <i data-feather="arrow-left" style="width:14px;height:14px;" class="me-1"></i>Input Meteran
         </a>
     </div>

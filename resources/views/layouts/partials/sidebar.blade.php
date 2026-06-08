@@ -10,7 +10,7 @@
                         <img src="/images/logo-sm.png" alt="Toya Amerta" height="32">
                     </span>
                     <span class="logo-lg">
-                        <img src="/images/logo-light.png" alt="Toya Amerta" height="100">
+                        <img src="/images/logo-light.png" alt="Toya Amerta" height="80">
                     </span>
                 </a>
                 <a href="{{ route('admin.dashboard') }}" class="logo logo-dark">
@@ -114,7 +114,7 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="{{ route('admin.maintenances.index') }}">
                         <span class="nav-icon">
                             <iconify-icon icon="solar:settings-minimalistic-bold-duotone"></iconify-icon>
                         </span>
@@ -125,6 +125,15 @@
                 <!-- ── KEUANGAN ── -->
                 @role('admin')
                 <li class="menu-title mt-2">Keuangan</li>
+
+                <li>
+                    <a href="{{ route('admin.new-customer-fees.index') }}">
+                        <span class="nav-icon">
+                            <iconify-icon icon="solar:user-plus-rounded-bold-duotone"></iconify-icon>
+                        </span>
+                        <span>Biaya Pemasangan</span>
+                    </a>
+                </li>
 
                 <li>
                     <a href="#">

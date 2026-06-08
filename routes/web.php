@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\MaintenanceController;
+use App\Http\Controllers\Admin\NewCustomerFeeController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\WaterReadingController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -55,6 +57,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::get('payments',               [PaymentController::class, 'index'])->name('payments.index');
         Route::post('payments',              [PaymentController::class, 'store'])->name('payments.store');
         Route::delete('payments/{payment}',  [PaymentController::class, 'destroy'])->name('payments.destroy');
+
+        // Biaya Pemasangan Pelanggan Baru
+        Route::get('new-customer-fees',                    [NewCustomerFeeController::class, 'index'])->name('new-customer-fees.index');
+        Route::delete('new-customer-fees/{newCustomerFee}', [NewCustomerFeeController::class, 'destroy'])->name('new-customer-fees.destroy');
+
+        // Maintenance
+        Route::get('maintenances',                        [MaintenanceController::class, 'index'])->name('maintenances.index');
+        Route::post('maintenances',                       [MaintenanceController::class, 'store'])->name('maintenances.store');
+        Route::put('maintenances/{maintenance}',          [MaintenanceController::class, 'update'])->name('maintenances.update');
+        Route::patch('maintenances/{maintenance}/status', [MaintenanceController::class, 'updateStatus'])->name('maintenances.update-status');
+        Route::delete('maintenances/{maintenance}',       [MaintenanceController::class, 'destroy'])->name('maintenances.destroy');
 
         // Pencatatan Meteran
         Route::get('water-readings/history',              [WaterReadingController::class, 'history'])->name('water-readings.history');

@@ -11,6 +11,7 @@ use App\Domain\UseCases\Customer\UpdateCustomerUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CustomerRequest;
 use App\Models\Customer;
+use App\Models\NewCustomerFee;
 use App\Models\TariffRate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -47,7 +48,23 @@ class CustomerController extends Controller
     {
         $data = $request->validated();
         $data['customer_number'] = $data['customer_number'] ?: $this->customerRepo->generateCustomerNumber();
-        $this->createUseCase->execute(CustomerDTO::fromArray($data));
+        $customer = $this->createUseCase->execute(CustomerDTO::fromArray($data));
+
+        // Simpan biaya pemasangan jika diisi
+        $feeAmount = (int) str_replace('.', '', $request->input('fee_amount', 0));
+        if ($feeAmount > 0) {
+            NewCustomerFee::create([
+                'customer_id'      => $customer->id,
+                'fee_type'         => $request->fee_type ?? 'biaya_instalasi',
+                'amount'           => $feeAmount,
+                'payment_date'     => $request->fee_payment_date ?? now()->toDateString(),
+                'payment_method'   => $request->fee_payment_method ?? 'tunai',
+                'description'      => $request->fee_description,
+                'recorded_by'      => auth()->id(),
+                'receipt_number'   => 'BPS-' . date('Ymd') . '-' . str_pad($customer->id, 4, '0', STR_PAD_LEFT),
+            ]);
+        }
+
         return back()->with('success', 'Pelanggan berhasil ditambahkan.');
     }
 

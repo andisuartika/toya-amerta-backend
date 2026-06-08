@@ -142,6 +142,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger py-2 fs-13 mb-3">
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-medium">No. Pelanggan</label>
@@ -208,6 +217,60 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Biaya Pemasangan (hanya saat tambah) --}}
+                    <div id="sectionBiayaPasang" class="mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" id="enableFee" value="1">
+                                <label class="form-check-label fw-medium" for="enableFee">
+                                    Catat Biaya Pemasangan
+                                </label>
+                            </div>
+                            <span class="fs-12 text-muted">Opsional — bisa dicatat nanti</span>
+                        </div>
+                        <div id="feeFields" style="display:none">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Jenis Biaya <span class="text-danger">*</span></label>
+                                    <select name="fee_type" id="feeType" class="form-select">
+                                        <option value="biaya_pendaftaran">Biaya Pendaftaran</option>
+                                        <option value="biaya_instalasi" selected>Biaya Instalasi</option>
+                                        <option value="biaya_meteran">Biaya Meteran</option>
+                                        <option value="uang_jaminan">Uang Jaminan</option>
+                                        <option value="lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Jumlah <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="text" id="feeAmountDisplay" class="form-control"
+                                               inputmode="numeric" autocomplete="off" placeholder="0">
+                                        <input type="hidden" name="fee_amount" id="feeAmount">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Tanggal Bayar <span class="text-danger">*</span></label>
+                                    <input type="date" name="fee_payment_date" id="feePaymentDate"
+                                           class="form-control" value="{{ now()->format('Y-m-d') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Metode</label>
+                                    <select name="fee_payment_method" class="form-select">
+                                        <option value="tunai" selected>Tunai (Cash)</option>
+                                        <option value="transfer">Transfer Bank</option>
+                                        <option value="lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-medium">Keterangan</label>
+                                    <input type="text" name="fee_description" class="form-control"
+                                           placeholder="Opsional">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
@@ -240,12 +303,35 @@
             .then(d => { document.getElementById('customerNumber').value = d.number; });
     });
 
+    // Format ribuan untuk biaya pemasangan
+    function formatRibuan(val) {
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+    document.getElementById('feeAmountDisplay')?.addEventListener('input', function () {
+        var raw    = this.value.replace(/[^\d]/g, '');
+        var num    = parseInt(raw, 10) || 0;
+        var cursor = this.selectionStart, oldLen = this.value.length;
+        this.value = raw ? formatRibuan(num) : '';
+        document.getElementById('feeAmount').value = num > 0 ? num : '';
+        var newLen = this.value.length;
+        this.setSelectionRange(cursor + (newLen - oldLen), cursor + (newLen - oldLen));
+    });
+
+    // Toggle biaya pemasangan
+    document.getElementById('enableFee')?.addEventListener('change', function () {
+        document.getElementById('feeFields').style.display = this.checked ? '' : 'none';
+    });
+
     document.getElementById('btnTambah').addEventListener('click', function () {
         document.getElementById('modalCustomerTitle').textContent = 'Tambah Pelanggan';
         document.getElementById('formCustomer').action = '{{ route('admin.customers.store') }}';
         document.getElementById('customerMethod').innerHTML = '';
         document.getElementById('formCustomer').reset();
         document.getElementById('customerActive').checked = true;
+        document.getElementById('enableFee').checked = false;
+        document.getElementById('feeFields').style.display = 'none';
+        document.getElementById('sectionBiayaPasang').style.display = '';
+        document.getElementById('feePaymentDate').value = '{{ now()->format('Y-m-d') }}';
         setTimeout(function () { feather.replace(); }, 50);
     });
 
@@ -256,6 +342,8 @@
         document.getElementById('modalCustomerTitle').textContent = 'Edit Pelanggan';
         document.getElementById('formCustomer').action = '/admin/customers/' + d.id;
         document.getElementById('customerMethod').innerHTML = '<input type="hidden" name="_method" value="PUT">';
+        // Sembunyikan section biaya pasang saat edit
+        document.getElementById('sectionBiayaPasang').style.display = 'none';
         document.getElementById('customerNumber').value      = d.customer_number;
         document.getElementById('customerName').value        = d.name;
         document.getElementById('customerZone').value        = d.zone_id;
@@ -274,6 +362,37 @@
         document.getElementById('formDelete').action = '/admin/customers/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('modalDelete')).show();
     });
+
 }());
+
+@if ($errors->any() && !old('_method'))
+document.addEventListener('DOMContentLoaded', function () {
+    function formatRibuan(val) {
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+    document.getElementById('modalCustomerTitle').textContent = 'Tambah Pelanggan';
+    document.getElementById('formCustomer').action = '{{ route('admin.customers.store') }}';
+    document.getElementById('customerMethod').innerHTML = '';
+    document.getElementById('customerNumber').value       = '{{ old('customer_number') }}';
+    document.getElementById('customerName').value         = '{{ old('name') }}';
+    document.getElementById('customerZone').value         = '{{ old('zone_id') }}';
+    document.getElementById('customerTariff').value       = '{{ old('tariff_rate_id') }}';
+    document.getElementById('customerPhone').value        = '{{ old('phone') }}';
+    document.getElementById('customerInstallDate').value  = '{{ old('installation_date') }}';
+    document.getElementById('customerInitialMeter').value = '{{ old('initial_meter', '0') }}';
+    document.getElementById('customerAddress').value      = '{{ addslashes(old('address', '')) }}';
+    document.getElementById('customerActive').checked     = {{ old('is_active') ? 'true' : 'false' }};
+    document.getElementById('sectionBiayaPasang').style.display = '';
+    @if (old('fee_amount'))
+    document.getElementById('enableFee').checked      = true;
+    document.getElementById('feeFields').style.display = '';
+    document.getElementById('feeAmountDisplay').value  = formatRibuan({{ (int) old('fee_amount', 0) }});
+    document.getElementById('feeAmount').value         = '{{ old('fee_amount') }}';
+    document.getElementById('feeType').value           = '{{ old('fee_type', 'biaya_instalasi') }}';
+    document.getElementById('feePaymentDate').value    = '{{ old('fee_payment_date') }}';
+    @endif
+    new bootstrap.Modal(document.getElementById('modalCustomer')).show();
+});
+@endif
 </script>
 @endsection

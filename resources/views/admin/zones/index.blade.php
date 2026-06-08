@@ -178,6 +178,8 @@
     document.getElementById('zoneCode')?.addEventListener('input', function () {
         this.value = this.value.toUpperCase();
     });
+
+    if (typeof feather !== 'undefined') feather.replace();
 }());
 </script>
 @endsection

@@ -136,7 +136,7 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="{{ route('admin.cash-transactions.index') }}">
                         <span class="nav-icon">
                             <iconify-icon icon="solar:bill-list-bold-duotone"></iconify-icon>
                         </span>

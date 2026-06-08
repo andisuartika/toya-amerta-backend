@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Domain\Contracts\PaymentRepositoryInterface;
 use App\Domain\DTOs\Payment\PaymentDTO;
+use App\Models\CashTransaction;
 use App\Models\PaymentRecord;
 use App\Models\WaterReading;
 use Illuminate\Support\Collection;
@@ -37,6 +38,21 @@ class PaymentRepository implements PaymentRepositoryInterface
             // Update status di water_reading
             $reading->update(['payment_status' => $status]);
 
+            // Auto-record ke kas masuk
+            $kas = CashTransaction::create([
+                'transaction_date' => $dto->payment_date,
+                'type'             => 'masuk',
+                'category'         => 'Pembayaran Tagihan Air',
+                'amount'           => $dto->amount_paid,
+                'description'      => 'Tagihan ' . $reading->customer->name .
+                                      ' — ' . $reading->period_label .
+                                      ' (' . $payment->receipt_number . ')',
+                'reference_type'   => 'payment_records',
+                'reference_id'     => $payment->id,
+                'recorded_by'      => $recordedBy,
+            ]);
+            $payment->update(['cash_transaction_id' => $kas->id]);
+
             return $payment;
         });
     }
@@ -51,6 +67,11 @@ class PaymentRepository implements PaymentRepositoryInterface
         DB::transaction(function () use ($id) {
             $payment = $this->findById($id);
             $reading = $payment->waterReading;
+
+            // Hapus kas terkait jika ada
+            if ($payment->cash_transaction_id) {
+                CashTransaction::find($payment->cash_transaction_id)?->delete();
+            }
 
             $payment->delete();
 

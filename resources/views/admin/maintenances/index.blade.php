@@ -185,9 +185,10 @@
                                 @endif
                             </td>
                             <td class="text-end pe-3">
+                                <div class="d-flex justify-content-end gap-1">
                                 {{-- Update Status --}}
                                 @if ($m->status !== 'selesai')
-                                <button class="btn btn-sm bg-warning-subtle me-1 btn-status"
+                                <button class="btn btn-sm bg-warning-subtle btn-status"
                                     data-id="{{ $m->id }}"
                                     data-title="{{ $m->title }}"
                                     data-status="{{ $m->status }}"
@@ -198,7 +199,7 @@
                                 </button>
                                 @endif
                                 {{-- Edit --}}
-                                <button class="btn btn-sm bg-primary-subtle me-1 btn-edit"
+                                <button class="btn btn-sm bg-primary-subtle btn-edit"
                                     data-id="{{ $m->id }}"
                                     data-title="{{ $m->title }}"
                                     data-location="{{ $m->location }}"
@@ -220,6 +221,7 @@
                                     title="Hapus">
                                     <i data-feather="trash-2" style="width:13px;height:13px;" class="text-danger"></i>
                                 </button>
+                                </div>
                             </td>
                         </tr>
                         @empty
@@ -430,6 +432,8 @@
         document.getElementById('formDelete').action = '/admin/maintenances/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('modalDelete')).show();
     });
+
+    if (typeof feather !== 'undefined') feather.replace();
 }());
 </script>
 @endsection

@@ -11,6 +11,7 @@ class PaymentRecord extends Model
         'water_reading_id', 'customer_id', 'officer_id',
         'amount_paid', 'payment_date', 'payment_method',
         'status', 'receipt_number', 'notes', 'wa_sent_at', 'recorded_by',
+        'cash_transaction_id',
     ];
 
     protected $casts = [

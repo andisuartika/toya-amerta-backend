@@ -10,6 +10,7 @@ use App\Domain\UseCases\Customer\DeleteCustomerUseCase;
 use App\Domain\UseCases\Customer\UpdateCustomerUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CustomerRequest;
+use App\Models\CashTransaction;
 use App\Models\Customer;
 use App\Models\NewCustomerFee;
 use App\Models\TariffRate;
@@ -53,7 +54,7 @@ class CustomerController extends Controller
         // Simpan biaya pemasangan jika diisi
         $feeAmount = (int) str_replace('.', '', $request->input('fee_amount', 0));
         if ($feeAmount > 0) {
-            NewCustomerFee::create([
+            $fee = NewCustomerFee::create([
                 'customer_id'      => $customer->id,
                 'fee_type'         => $request->fee_type ?? 'biaya_instalasi',
                 'amount'           => $feeAmount,
@@ -63,6 +64,21 @@ class CustomerController extends Controller
                 'recorded_by'      => auth()->id(),
                 'receipt_number'   => 'BPS-' . date('Ymd') . '-' . str_pad($customer->id, 4, '0', STR_PAD_LEFT),
             ]);
+
+            // Auto-record ke kas masuk
+            $kas = CashTransaction::create([
+                'transaction_date' => $fee->payment_date,
+                'type'             => 'masuk',
+                'category'         => 'Biaya Pemasangan Pelanggan Baru',
+                'amount'           => $feeAmount,
+                'description'      => \App\Models\NewCustomerFee::feeTypeLabel($fee->fee_type) .
+                                      ' — ' . $customer->name .
+                                      ' (' . $fee->receipt_number . ')',
+                'reference_type'   => 'new_customer_fees',
+                'reference_id'     => $fee->id,
+                'recorded_by'      => auth()->id(),
+            ]);
+            $fee->update(['cash_transaction_id' => $kas->id]);
         }
 
         return back()->with('success', 'Pelanggan berhasil ditambahkan.');

@@ -187,6 +187,8 @@
         document.getElementById('formDelete').action = '/admin/new-customer-fees/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('modalDelete')).show();
     });
+
+    if (typeof feather !== 'undefined') feather.replace();
 }());
 </script>
 @endsection

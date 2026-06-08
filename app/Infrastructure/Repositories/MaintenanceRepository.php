@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Domain\Contracts\MaintenanceRepositoryInterface;
 use App\Domain\DTOs\Maintenance\MaintenanceDTO;
+use App\Models\CashTransaction;
 use App\Models\Maintenance;
 use Illuminate\Support\Collection;
 
@@ -73,6 +74,23 @@ class MaintenanceRepository implements MaintenanceRepositoryInterface
         }
 
         $maintenance->update($data);
+        $maintenance = $maintenance->fresh();
+
+        // Auto-record ke kas keluar saat status selesai dan ada biaya
+        if ($status === 'selesai' && $maintenance->total_cost > 0 && ! $maintenance->cash_transaction_id) {
+            $kas = CashTransaction::create([
+                'transaction_date' => $maintenance->completed_date ?? now()->toDateString(),
+                'type'             => 'keluar',
+                'category'         => 'Biaya Maintenance',
+                'amount'           => $maintenance->total_cost,
+                'description'      => $maintenance->title . ' — ' . $maintenance->location,
+                'reference_type'   => 'maintenances',
+                'reference_id'     => $maintenance->id,
+                'recorded_by'      => auth()->id(),
+            ]);
+            $maintenance->update(['cash_transaction_id' => $kas->id]);
+        }
+
         return $maintenance->fresh();
     }
 }

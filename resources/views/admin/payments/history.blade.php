@@ -182,6 +182,8 @@ window.addEventListener('load', function () {
         document.getElementById('formDelete').action = '/admin/payments/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('modalDelete')).show();
     });
+
+    if (typeof feather !== 'undefined') feather.replace();
 });
 </script>
 @endsection

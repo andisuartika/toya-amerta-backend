@@ -353,6 +353,8 @@ window.addEventListener('load', function () {
             row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
     });
+
+    if (typeof feather !== 'undefined') feather.replace();
 }());
 }); // end window.load
 </script>

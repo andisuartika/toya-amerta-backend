@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\MaintenanceController;
+use App\Http\Controllers\Admin\CashTransactionController;
 use App\Http\Controllers\Admin\NewCustomerFeeController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\WaterReadingController;
@@ -57,6 +58,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::get('payments',               [PaymentController::class, 'index'])->name('payments.index');
         Route::post('payments',              [PaymentController::class, 'store'])->name('payments.store');
         Route::delete('payments/{payment}',  [PaymentController::class, 'destroy'])->name('payments.destroy');
+
+        // Kas Transaksi
+        Route::get('cash-transactions',                    [CashTransactionController::class, 'index'])->name('cash-transactions.index');
+        Route::post('cash-transactions',                   [CashTransactionController::class, 'store'])->name('cash-transactions.store');
+        Route::put('cash-transactions/{cashTransaction}',  [CashTransactionController::class, 'update'])->name('cash-transactions.update');
+        Route::delete('cash-transactions/{cashTransaction}', [CashTransactionController::class, 'destroy'])->name('cash-transactions.destroy');
 
         // Biaya Pemasangan Pelanggan Baru
         Route::get('new-customer-fees',                    [NewCustomerFeeController::class, 'index'])->name('new-customer-fees.index');

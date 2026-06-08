@@ -199,6 +199,8 @@
         document.getElementById('formDelete').action = '/admin/tariff-rates/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('modalDelete')).show();
     });
+
+    if (typeof feather !== 'undefined') feather.replace();
 }());
 </script>
 @endsection

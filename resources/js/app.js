@@ -21,6 +21,9 @@ window.feather = feather
 import select2 from 'select2'
 select2(window.$)
 
+import ApexCharts from 'apexcharts'
+window.ApexCharts = ApexCharts
+
 
 class App {
   // All Components

@@ -14,10 +14,12 @@ class PaymentRepository implements PaymentRepositoryInterface
     public function create(PaymentDTO $dto, int $recordedBy): PaymentRecord
     {
         return DB::transaction(function () use ($dto, $recordedBy) {
-            $reading = WaterReading::with('customer')->findOrFail($dto->water_reading_id);
+            $reading      = WaterReading::with('customer')->findOrFail($dto->water_reading_id);
+            $alreadyPaid  = PaymentRecord::where('water_reading_id', $reading->id)->sum('amount_paid');
+            $totalPaid    = $alreadyPaid + $dto->amount_paid;
 
-            // Tentukan status: lunas jika bayar >= total tagihan
-            $status = $dto->amount_paid >= $reading->total_amount ? 'lunas' : 'sebagian';
+            // Lunas jika akumulasi pembayaran >= total tagihan
+            $status = $totalPaid >= $reading->total_amount ? 'lunas' : 'sebagian';
 
             $payment = PaymentRecord::create([
                 'water_reading_id' => $reading->id,
@@ -52,17 +54,24 @@ class PaymentRepository implements PaymentRepositoryInterface
 
             $payment->delete();
 
-            // Kembalikan status water_reading ke belum_bayar jika tidak ada pembayaran lain
-            $otherPayments = PaymentRecord::where('water_reading_id', $reading->id)->exists();
-            if (! $otherPayments) {
-                $reading->update(['payment_status' => 'belum_bayar']);
+            // Hitung ulang status berdasarkan sisa pembayaran setelah dihapus
+            $totalPaid = PaymentRecord::where('water_reading_id', $reading->id)->sum('amount_paid');
+
+            if ($totalPaid <= 0) {
+                $status = 'belum_bayar';
+            } elseif ($totalPaid >= $reading->total_amount) {
+                $status = 'lunas';
+            } else {
+                $status = 'sebagian';
             }
+
+            $reading->update(['payment_status' => $status]);
         });
     }
 
     public function unpaid(array $filters = []): Collection
     {
-        return WaterReading::with(['customer.zone', 'customer.tariffRate'])
+        return WaterReading::with(['customer.zone', 'customer.tariffRate', 'paymentRecords'])
             ->join('customers', 'customers.id', '=', 'water_readings.customer_id')
             ->whereIn('water_readings.payment_status', ['belum_bayar', 'sebagian'])
             ->when($filters['zone_id'] ?? null, fn ($q) => $q->where('customers.zone_id', $filters['zone_id']))
@@ -72,7 +81,11 @@ class PaymentRepository implements PaymentRepositoryInterface
             ->orderBy('water_readings.period_month')
             ->orderBy('customers.name')
             ->select('water_readings.*')
-            ->get();
+            ->get()
+            ->each(function ($r) {
+                $paid = $r->paymentRecords->sum('amount_paid');
+                $r->remaining_amount = max(0, $r->total_amount - $paid);
+            });
     }
 
     public function history(array $filters = []): Collection

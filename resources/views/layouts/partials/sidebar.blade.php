@@ -7,18 +7,18 @@
             <div class="logo-box">
                 <a href="{{ route('admin.dashboard') }}" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="/images/logo-sm.png" alt="" height="22">
+                        <img src="/images/logo-sm.png" alt="Toya Amerta" height="32">
                     </span>
                     <span class="logo-lg">
-                        <img src="/images/logo-light.png" alt="" height="24">
+                        <img src="/images/logo-light.png" alt="Toya Amerta" height="100">
                     </span>
                 </a>
                 <a href="{{ route('admin.dashboard') }}" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="/images/logo-sm.png" alt="" height="22">
+                        <img src="/images/logo-sm.png" alt="Toya Amerta" height="32">
                     </span>
                     <span class="logo-lg">
-                        <img src="/images/logo-dark.png" alt="" height="24">
+                        <img src="/images/logo-dark.png" alt="Toya Amerta" height="80">
                     </span>
                 </a>
             </div>

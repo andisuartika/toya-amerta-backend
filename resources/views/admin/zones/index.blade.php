@@ -21,7 +21,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <input type="text" id="zonesSearch" class="form-control form-control-sm w-auto"
-                               placeholder="&#x1F50D; Cari zona..." style="min-width:220px">
+                               placeholder="Cari zona..." style="min-width:220px">
                     </div>
                     <div class="table-responsive">
                         <table class="table" id="zonesTable">

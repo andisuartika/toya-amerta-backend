@@ -4,4 +4,5 @@
 <meta name="description" content="Sistem manajemen PDAM Desa yang modern dan terintegrasi." />
 <meta name="author" content="Toya Amerta" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<link rel="shortcut icon" href="/images/favicon.ico">
+<link rel="shortcut icon" href="/images/favicon.png">
+<link rel="icon" type="image/png" href="/images/favicon.png">

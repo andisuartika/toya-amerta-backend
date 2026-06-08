@@ -68,7 +68,7 @@
                 <span class="badge bg-secondary-subtle text-secondary ms-1">{{ $readings->count() }} periode</span>
             </h5>
             <input type="text" id="historySearch" class="form-control form-control-sm"
-                   placeholder="&#x1F50D; Cari..." style="width:180px">
+                   placeholder="Cari..." style="width:180px">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

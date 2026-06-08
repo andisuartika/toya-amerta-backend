@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WaterReading extends Model
 {
@@ -40,6 +41,11 @@ class WaterReading extends Model
     public function tariffRate(): BelongsTo
     {
         return $this->belongsTo(TariffRate::class);
+    }
+
+    public function paymentRecords(): HasMany
+    {
+        return $this->hasMany(PaymentRecord::class);
     }
 
     public function getPeriodLabelAttribute(): string

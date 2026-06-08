@@ -27,6 +27,15 @@ class ConfirmPaymentUseCase
             ]);
         }
 
+        $alreadyPaid = PaymentRecord::where('water_reading_id', $reading->id)->sum('amount_paid');
+        $remaining   = $reading->total_amount - $alreadyPaid;
+
+        if ($dto->amount_paid > $remaining) {
+            throw ValidationException::withMessages([
+                'amount_paid' => 'Jumlah bayar (Rp ' . number_format($dto->amount_paid, 0, ',', '.') . ') melebihi sisa tagihan (Rp ' . number_format($remaining, 0, ',', '.') . ').',
+            ]);
+        }
+
         return $this->repo->create($dto, $recordedBy);
     }
 }

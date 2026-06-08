@@ -67,7 +67,7 @@
                 <div class="card-body py-3">
                     <div class="fs-12 text-muted mb-1">Total Belum Bayar</div>
                     <div class="fs-20 fw-bold text-danger">
-                        Rp {{ number_format($unpaid->where('payment_status','belum_bayar')->sum('total_amount'), 0, ',', '.') }}
+                        Rp {{ number_format($unpaid->where('payment_status','belum_bayar')->sum('remaining_amount'), 0, ',', '.') }}
                     </div>
                     <div class="fs-12 text-muted">{{ $unpaid->where('payment_status','belum_bayar')->count() }} tagihan</div>
                 </div>
@@ -78,7 +78,7 @@
                 <div class="card-body py-3">
                     <div class="fs-12 text-muted mb-1">Bayar Sebagian</div>
                     <div class="fs-20 fw-bold text-warning">
-                        Rp {{ number_format($unpaid->where('payment_status','sebagian')->sum('total_amount'), 0, ',', '.') }}
+                        Rp {{ number_format($unpaid->where('payment_status','sebagian')->sum('remaining_amount'), 0, ',', '.') }}
                     </div>
                     <div class="fs-12 text-muted">{{ $unpaid->where('payment_status','sebagian')->count() }} tagihan</div>
                 </div>
@@ -89,7 +89,7 @@
                 <div class="card-body py-3">
                     <div class="fs-12 text-muted mb-1">Total Piutang</div>
                     <div class="fs-20 fw-bold text-primary">
-                        Rp {{ number_format($unpaid->sum('total_amount'), 0, ',', '.') }}
+                        Rp {{ number_format($unpaid->sum('remaining_amount'), 0, ',', '.') }}
                     </div>
                     <div class="fs-12 text-muted">{{ $unpaid->count() }} tagihan pending</div>
                 </div>
@@ -102,7 +102,7 @@
         <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="card-title mb-0 fs-15">Daftar Tagihan Belum Lunas</h5>
             <input type="text" id="paymentSearch" class="form-control form-control-sm"
-                   placeholder="&#x1F50D; Cari pelanggan..." style="width:200px">
+                   placeholder="Cari pelanggan..." style="width:200px">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -132,7 +132,12 @@
                                 </span>
                             </td>
                             <td class="text-end fw-bold text-danger fs-14">
-                                Rp {{ number_format($r->total_amount, 0, ',', '.') }}
+                                Rp {{ number_format($r->remaining_amount, 0, ',', '.') }}
+                                @if ($r->payment_status === 'sebagian')
+                                    <div class="fs-11 text-muted fw-normal">
+                                        dari Rp {{ number_format($r->total_amount, 0, ',', '.') }}
+                                    </div>
+                                @endif
                             </td>
                             <td class="text-center">
                                 @if ($r->payment_status === 'sebagian')
@@ -146,7 +151,8 @@
                                     data-id="{{ $r->id }}"
                                     data-name="{{ $r->customer->name }}"
                                     data-period="{{ \Carbon\Carbon::create()->month($r->period_month)->translatedFormat('F') }} {{ $r->period_year }}"
-                                    data-total="{{ $r->total_amount }}"
+                                    data-total="{{ $r->remaining_amount }}"
+                                    data-original="{{ $r->total_amount }}"
                                     data-bs-toggle="modal" data-bs-target="#modalKonfirmasi"
                                     title="Konfirmasi Bayar">
                                     <i data-feather="check-circle" style="width:13px;height:13px;" class="me-1"></i>Bayar
@@ -190,8 +196,9 @@
                                 <div class="text-muted fs-12 mt-1" id="konfirmasiPeriode"></div>
                             </div>
                             <div class="text-end">
-                                <div class="fs-11 text-muted">Total Tagihan</div>
+                                <div class="fs-11 text-muted" id="konfirmasiTotalLabel">Total Tagihan</div>
                                 <div class="fw-bold fs-18 text-danger" id="konfirmasiTotal"></div>
+                                <div class="fs-11 text-muted" id="konfirmasiOriginal"></div>
                             </div>
                         </div>
                     </div>
@@ -200,9 +207,10 @@
                         <label class="form-label fw-medium">Jumlah Bayar <span class="text-danger">*</span></label>
                         <div class="input-group input-group-lg">
                             <span class="input-group-text fw-semibold">Rp</span>
-                            <input type="number" name="amount_paid" id="amountPaid"
-                                   class="form-control fw-bold" required min="1" step="1"
-                                   placeholder="0">
+                            <input type="text" id="amountPaidDisplay"
+                                   class="form-control fw-bold" required
+                                   placeholder="0" inputmode="numeric" autocomplete="off">
+                            <input type="hidden" name="amount_paid" id="amountPaid">
                         </div>
                         <div class="form-text">Isi sesuai tagihan untuk lunas, atau kurang untuk sebagian.</div>
                     </div>
@@ -258,22 +266,59 @@
         document.getElementById('konfirmasiReadingId').value     = d.id;
         document.getElementById('konfirmasiNama').textContent    = d.name;
         document.getElementById('konfirmasiPeriode').textContent = 'Periode: ' + d.period;
-        document.getElementById('konfirmasiTotal').textContent   =
-            'Rp ' + parseFloat(d.total).toLocaleString('id-ID');
+
+        var remaining = Math.round(parseFloat(d.total));
+        var original  = Math.round(parseFloat(d.original));
+        document.getElementById('konfirmasiTotal').textContent = 'Rp ' + remaining.toLocaleString('id-ID');
+        document.getElementById('konfirmasiTotalLabel').textContent = remaining < original ? 'Sisa Tagihan' : 'Total Tagihan';
+        document.getElementById('konfirmasiOriginal').textContent   = remaining < original
+            ? 'dari Rp ' + original.toLocaleString('id-ID')
+            : '';
 
         var total    = Math.round(parseFloat(d.total));
-        var amountEl = document.getElementById('amountPaid');
-        amountEl.value         = total;
-        amountEl.dataset.total = total;
+        var display  = document.getElementById('amountPaidDisplay');
+        var hidden   = document.getElementById('amountPaid');
+        display.value         = formatRibuan(total);
+        hidden.value          = total;
+        display.dataset.total = total;
+        display.dataset.max   = total;
 
         updateStatusPreview();
     });
 
-    document.getElementById('amountPaid').addEventListener('input', updateStatusPreview);
+    function formatRibuan(val) {
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function parseRibuan(val) {
+        return parseInt(val.replace(/\./g, ''), 10) || 0;
+    }
+
+    document.getElementById('amountPaidDisplay').addEventListener('input', function () {
+        var raw    = this.value.replace(/[^\d]/g, '');
+        var num    = parseInt(raw, 10) || 0;
+        var max    = parseInt(this.dataset.max, 10) || 0;
+        var cursor = this.selectionStart;
+        var oldLen = this.value.length;
+
+        // Batasi tidak boleh melebihi sisa tagihan
+        if (max > 0 && num > max) {
+            num = max;
+            raw = String(num);
+        }
+
+        this.value = raw ? formatRibuan(num) : '';
+        document.getElementById('amountPaid').value = num || '';
+
+        var newLen = this.value.length;
+        this.setSelectionRange(cursor + (newLen - oldLen), cursor + (newLen - oldLen));
+
+        updateStatusPreview();
+    });
 
     function updateStatusPreview() {
-        var paid  = parseFloat(document.getElementById('amountPaid').value) || 0;
-        var total = parseFloat(document.getElementById('amountPaid').dataset.total) || 0;
+        var paid  = parseRibuan(document.getElementById('amountPaidDisplay').value);
+        var total = parseFloat(document.getElementById('amountPaidDisplay').dataset.total) || 0;
         var el    = document.getElementById('statusPreview');
         if (!total) { el.innerHTML = ''; return; }
 

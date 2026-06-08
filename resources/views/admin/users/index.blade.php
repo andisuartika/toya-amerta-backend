@@ -49,7 +49,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <input type="text" id="usersSearch" class="form-control form-control-sm w-auto"
-                               placeholder="&#x1F50D; Cari pengguna..." style="min-width:220px">
+                               placeholder="Cari pengguna..." style="min-width:220px">
                     </div>
                     <div class="table-responsive">
                         <table class="table" id="usersTable">

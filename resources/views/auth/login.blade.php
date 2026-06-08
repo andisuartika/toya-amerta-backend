@@ -12,24 +12,15 @@
 
                             {{-- Logo --}}
                             <div class="mb-4 text-center">
-                                <div class="auth-brand">
-                                    <a href="{{ url('/') }}" class="logo logo-light">
-                                        <span class="logo-lg">
-                                            <img src="/images/logo-light.png" alt="Toya Amerta" height="28">
-                                        </span>
-                                    </a>
-                                    <a href="{{ url('/') }}" class="logo logo-dark">
-                                        <span class="logo-lg">
-                                            <img src="/images/logo-dark.png" alt="Toya Amerta" height="28">
-                                        </span>
-                                    </a>
-                                </div>
+                                <a href="{{ url('/') }}">
+                                    <img src="/images/logo-dark.png" alt="Toya Amerta" height="70">
+                                </a>
                             </div>
 
                             {{-- Title --}}
                             <div class="auth-title-section mb-4 text-center">
                                 <h3 class="text-primary fw-semibold mb-1">Selamat Datang!</h3>
-                                <p class="text-muted fs-14 mb-0">Masuk ke Sistem PDAM Desa Toya Amerta</p>
+                                <p class="text-muted fs-14 mb-0">Masuk ke Sistem PDAM Toya Amerta</p>
                             </div>
 
                             {{-- Form --}}
@@ -134,19 +125,19 @@
             <div class="row mt-4 text-white">
                 <div class="col-4">
                     <div class="p-3">
-                        <h4 class="fw-bold mb-1">💧</h4>
+                        <iconify-icon icon="solar:waterdrop-bold-duotone" class="fs-28 text-white"></iconify-icon>
                         <p class="mb-0 fs-13">Pencatatan<br>Meter Digital</p>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="p-3">
-                        <h4 class="fw-bold mb-1">💬</h4>
+                        <iconify-icon icon="solar:chat-round-bold-duotone" class="fs-28 text-white"></iconify-icon>
                         <p class="mb-0 fs-13">Notifikasi<br>WhatsApp</p>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="p-3">
-                        <h4 class="fw-bold mb-1">📊</h4>
+                        <iconify-icon icon="solar:graph-up-bold-duotone" class="fs-28 text-white"></iconify-icon>
                         <p class="mb-0 fs-13">Laporan<br>Keuangan</p>
                     </div>
                 </div>

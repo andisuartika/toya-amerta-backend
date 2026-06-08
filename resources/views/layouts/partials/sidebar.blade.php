@@ -145,7 +145,7 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="{{ route('admin.financial-report.index') }}" class="{{ request()->routeIs('admin.financial-report.*') ? 'active' : '' }}">
                         <span class="nav-icon">
                             <iconify-icon icon="solar:graph-up-bold-duotone"></iconify-icon>
                         </span>
@@ -154,7 +154,7 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="{{ route('admin.pdam-bills.index') }}" class="{{ request()->routeIs('admin.pdam-bills.*') ? 'active' : '' }}">
                         <span class="nav-icon">
                             <iconify-icon icon="solar:document-text-bold-duotone"></iconify-icon>
                         </span>

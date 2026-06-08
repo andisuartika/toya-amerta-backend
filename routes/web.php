@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\MaintenanceController;
 use App\Http\Controllers\Admin\CashTransactionController;
+use App\Http\Controllers\Admin\FinancialReportController;
+use App\Http\Controllers\Admin\PdamBillController;
 use App\Http\Controllers\Admin\NewCustomerFeeController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\WaterReadingController;
@@ -83,6 +85,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::get('water-readings',                      [WaterReadingController::class, 'index'])->name('water-readings.index');
         Route::post('water-readings',                     [WaterReadingController::class, 'store'])->name('water-readings.store');
         Route::delete('water-readings/{waterReading}',   [WaterReadingController::class, 'destroy'])->name('water-readings.destroy');
+
+        // Rekap Keuangan
+        Route::get('financial-report', [FinancialReportController::class, 'index'])->name('financial-report.index');
+
+        // Tagihan PDAM Pusat
+        Route::get('pdam-bills',                         [PdamBillController::class, 'index'])->name('pdam-bills.index');
+        Route::post('pdam-bills',                        [PdamBillController::class, 'store'])->name('pdam-bills.store');
+        Route::put('pdam-bills/{pdamBill}',              [PdamBillController::class, 'update'])->name('pdam-bills.update');
+        Route::patch('pdam-bills/{pdamBill}/confirm',    [PdamBillController::class, 'confirm'])->name('pdam-bills.confirm');
+        Route::delete('pdam-bills/{pdamBill}',           [PdamBillController::class, 'destroy'])->name('pdam-bills.destroy');
 
         // Pengguna
         Route::get('users',            [UserController::class, 'index'])->name('users.index');

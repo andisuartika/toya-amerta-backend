@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\MaintenanceController;
 use App\Http\Controllers\Admin\CashTransactionController;
 use App\Http\Controllers\Admin\FinancialReportController;
+use App\Http\Controllers\Admin\WaterUsageReportController;
 use App\Http\Controllers\Admin\PdamBillController;
 use App\Http\Controllers\Admin\NewCustomerFeeController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -88,6 +89,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
 
         // Rekap Keuangan
         Route::get('financial-report', [FinancialReportController::class, 'index'])->name('financial-report.index');
+
+        // Laporan Penggunaan Air
+        Route::get('water-usage-report',       [WaterUsageReportController::class, 'index'])->name('water-usage-report.index');
+        Route::get('water-usage-report/excel', [WaterUsageReportController::class, 'downloadExcel'])->name('water-usage-report.excel');
+        Route::get('water-usage-report/pdf',   [WaterUsageReportController::class, 'downloadPdf'])->name('water-usage-report.pdf');
 
         // Tagihan PDAM Pusat
         Route::get('pdam-bills',                         [PdamBillController::class, 'index'])->name('pdam-bills.index');

@@ -93,6 +93,7 @@
                         <ul class="nav-second-level">
                             <li><a href="{{ route('admin.water-readings.index') }}">Input Meter</a></li>
                             <li><a href="{{ route('admin.water-readings.history') }}">Riwayat Pembacaan</a></li>
+                            <li><a href="{{ route('admin.water-readings.import.create') }}">Import Data Historis</a></li>
                         </ul>
                     </div>
                 </li>

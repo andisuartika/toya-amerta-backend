@@ -1,0 +1,2784 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Toya Amerta API",
+        "description": "REST API untuk aplikasi mobile (Flutter) Sistem Informasi PDAM Desa Toya Amerta. Semua response menggunakan envelope { success, message, data, meta }.",
+        "contact": {
+            "name": "Toya Amerta Dev Team",
+            "email": "pt.andisuartika@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "description": "Login menggunakan email & password. Mengembalikan Bearer token yang berlaku 30 hari.",
+                "operationId": "17911fbfbd5e7f3c84e5c58066a96e64",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "petugas@toya.desa.id"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "rahasia123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Budi Santoso"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "petugas@toya.desa.id"
+                                                        },
+                                                        "phone": {
+                                                            "type": "string",
+                                                            "example": "081234567890"
+                                                        },
+                                                        "role": {
+                                                            "type": "string",
+                                                            "example": "petugas"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Akun nonaktif",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Email atau password tidak sesuai",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Profil user yang sedang login",
+                "description": "Mengembalikan data user. Jika role pelanggan, akan disertakan field `customer`.",
+                "operationId": "cf8a59997666bcd8a2afc7e2ee549f86",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Wayan Karya"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "wayan@gmail.com"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "082233445566"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "pelanggan"
+                                                },
+                                                "customer": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "customer_number": {
+                                                            "type": "string",
+                                                            "example": "PLG-0005"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Wayan Karya"
+                                                        },
+                                                        "address": {
+                                                            "type": "string",
+                                                            "example": "Banjar Kaja No. 12"
+                                                        },
+                                                        "zone": {
+                                                            "type": "string",
+                                                            "example": "Zona A"
+                                                        },
+                                                        "tariff": {
+                                                            "type": "string",
+                                                            "example": "Tarif Rumah Tangga"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "description": "Menghapus token akses yang sedang digunakan.",
+                "operationId": "548bc6da3d6d9494cb678c84b8d0a886",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout berhasil."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pelanggan/profile": {
+            "get": {
+                "tags": [
+                    "Pelanggan"
+                ],
+                "summary": "Profil pelanggan",
+                "description": "Mengembalikan data profil & informasi tarif pelanggan yang sedang login.",
+                "operationId": "4d1869c3c35e4d1e74d320d1df8a1bd1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "customer_number": {
+                                                    "type": "string",
+                                                    "example": "PLG-0005"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Wayan Karya"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "Banjar Kaja No. 12"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "082233445566"
+                                                },
+                                                "zone": {
+                                                    "type": "string",
+                                                    "example": "Zona A"
+                                                },
+                                                "tariff_name": {
+                                                    "type": "string",
+                                                    "example": "Tarif Rumah Tangga"
+                                                },
+                                                "price_per_m3": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 2500
+                                                },
+                                                "minimum_charge": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 15000
+                                                },
+                                                "minimum_usage": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5
+                                                },
+                                                "installation_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2022-03-15"
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role bukan pelanggan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pelanggan/tagihan": {
+            "get": {
+                "tags": [
+                    "Pelanggan"
+                ],
+                "summary": "Tagihan belum lunas",
+                "description": "Mengembalikan semua tagihan dengan status belum_bayar atau sebagian milik pelanggan yang sedang login.",
+                "operationId": "3abfb1603c5bc3a6ac748954a2225c6f",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 42
+                                                    },
+                                                    "period_year": {
+                                                        "type": "integer",
+                                                        "example": 2026
+                                                    },
+                                                    "period_month": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "period_label": {
+                                                        "type": "string",
+                                                        "example": "Mei 2026"
+                                                    },
+                                                    "reading_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2026-05-03"
+                                                    },
+                                                    "previous_reading": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 120.5
+                                                    },
+                                                    "current_reading": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 132.8
+                                                    },
+                                                    "usage_m3": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 12.3
+                                                    },
+                                                    "total_amount": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 30750
+                                                    },
+                                                    "amount_paid": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 0
+                                                    },
+                                                    "remaining_amount": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 30750
+                                                    },
+                                                    "payment_status": {
+                                                        "type": "string",
+                                                        "example": "belum_bayar",
+                                                        "enum": [
+                                                            "belum_bayar",
+                                                            "sebagian"
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role bukan pelanggan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pelanggan/riwayat": {
+            "get": {
+                "tags": [
+                    "Pelanggan"
+                ],
+                "summary": "Riwayat pemakaian air",
+                "description": "Mengembalikan riwayat pembacaan meter pelanggan, terbaru lebih dulu.",
+                "operationId": "98922e1d11953bc36bd6f34f6c7fef38",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Jumlah data yang diambil, maksimal 24",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 12,
+                            "maximum": 24
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 42
+                                                    },
+                                                    "period_year": {
+                                                        "type": "integer",
+                                                        "example": 2026
+                                                    },
+                                                    "period_month": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "period_label": {
+                                                        "type": "string",
+                                                        "example": "Mei 2026"
+                                                    },
+                                                    "reading_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2026-05-03"
+                                                    },
+                                                    "previous_reading": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 120.5
+                                                    },
+                                                    "current_reading": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 132.8
+                                                    },
+                                                    "usage_m3": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 12.3
+                                                    },
+                                                    "total_amount": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 30750
+                                                    },
+                                                    "amount_paid": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 30750
+                                                    },
+                                                    "payment_status": {
+                                                        "type": "string",
+                                                        "example": "lunas",
+                                                        "enum": [
+                                                            "belum_bayar",
+                                                            "sebagian",
+                                                            "lunas"
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "limit": {
+                                                    "type": "integer",
+                                                    "example": 12
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role bukan pelanggan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/dashboard": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Ringkasan dashboard petugas",
+                "description": "Statistik pelanggan aktif, pencatatan meter, tagihan belum bayar, total kas terkumpul, serta daftar gabungan pelanggan sudah/belum dicatat untuk periode tertentu.",
+                "operationId": "8139ae47f80e78fc8dffa7e427e4d209",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Tahun periode (default: tahun sekarang)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2026
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Bulan periode 1-12 (default: bulan sekarang)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "active_customers": {
+                                                    "type": "integer",
+                                                    "example": 45
+                                                },
+                                                "recorded_count": {
+                                                    "type": "integer",
+                                                    "example": 30
+                                                },
+                                                "not_recorded_count": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "unpaid_count": {
+                                                    "type": "integer",
+                                                    "example": 12
+                                                },
+                                                "total_collected": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 540000
+                                                },
+                                                "history": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "water_reading_id": {
+                                                                "type": "integer",
+                                                                "example": 55,
+                                                                "nullable": true
+                                                            },
+                                                            "customer_id": {
+                                                                "type": "integer",
+                                                                "example": 5
+                                                            },
+                                                            "customer_name": {
+                                                                "type": "string",
+                                                                "example": "Andi Suartika"
+                                                            },
+                                                            "customer_number": {
+                                                                "type": "string",
+                                                                "example": "PLG-2024-001"
+                                                            },
+                                                            "zone": {
+                                                                "type": "string",
+                                                                "example": "Lingkungan Sangket"
+                                                            },
+                                                            "recorded": {
+                                                                "type": "boolean",
+                                                                "example": true
+                                                            },
+                                                            "reading_date": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "2026-06-03",
+                                                                "nullable": true
+                                                            },
+                                                            "total_amount": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 31000,
+                                                                "nullable": true
+                                                            },
+                                                            "amount_paid": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 0,
+                                                                "nullable": true
+                                                            },
+                                                            "payment_status": {
+                                                                "type": "string",
+                                                                "example": "belum_bayar",
+                                                                "enum": [
+                                                                    "belum_bayar",
+                                                                    "sebagian",
+                                                                    "lunas",
+                                                                    "belum_dicatat"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "year": {
+                                                    "type": "integer",
+                                                    "example": 2026
+                                                },
+                                                "month": {
+                                                    "type": "integer",
+                                                    "example": 6
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/maintenance": {
+            "get": {
+                "tags": [
+                    "Petugas - Maintenance"
+                ],
+                "summary": "Daftar laporan maintenance",
+                "operationId": "fcab5457fe4e9f1efbaa36712e62a4fb",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "dilaporkan",
+                                "dalam_proses",
+                                "selesai",
+                                "ditunda"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "priority",
+                        "in": "query",
+                        "description": "Filter prioritas",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "rendah",
+                                "sedang",
+                                "tinggi",
+                                "darurat"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter kategori",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pipa_bocor",
+                                "meteran_rusak",
+                                "pompa",
+                                "reservoir",
+                                "instalasi_baru",
+                                "lainnya"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "zone_id",
+                        "in": "query",
+                        "description": "Filter zona",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Maintenance"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Petugas - Maintenance"
+                ],
+                "summary": "Buat laporan maintenance",
+                "operationId": "049b4b08cf092efe9df0b8a08caa91b0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "location",
+                                    "category",
+                                    "priority",
+                                    "reported_date"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Pipa bocor di Jl. Raya Desa"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Jl. Raya Desa No. 45"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "pipa_bocor",
+                                        "enum": [
+                                            "pipa_bocor",
+                                            "meteran_rusak",
+                                            "pompa",
+                                            "reservoir",
+                                            "instalasi_baru",
+                                            "lainnya"
+                                        ]
+                                    },
+                                    "priority": {
+                                        "type": "string",
+                                        "example": "tinggi",
+                                        "enum": [
+                                            "rendah",
+                                            "sedang",
+                                            "tinggi",
+                                            "darurat"
+                                        ]
+                                    },
+                                    "reported_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-08"
+                                    },
+                                    "zone_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    },
+                                    "customer_id": {
+                                        "type": "integer",
+                                        "example": null,
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Air merembes dari sambungan pipa bawah tanah.",
+                                        "nullable": true
+                                    },
+                                    "material_cost": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": null,
+                                        "nullable": true
+                                    },
+                                    "labor_cost": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Laporan maintenance berhasil disimpan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Laporan maintenance berhasil disimpan."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Maintenance"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/maintenance/{id}": {
+            "get": {
+                "tags": [
+                    "Petugas - Maintenance"
+                ],
+                "summary": "Detail laporan maintenance",
+                "operationId": "389a26ad048b83ddf0b83797adee2aa2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID laporan maintenance",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Maintenance"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/maintenance/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Petugas - Maintenance"
+                ],
+                "summary": "Update status maintenance",
+                "description": "Saat status berubah ke dalam_proses, handled_date otomatis diisi. Saat selesai, completed_date diisi dan biaya otomatis tercatat ke kas keluar.",
+                "operationId": "67810836ad4a4a2d7a2c79c60778afe5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID laporan maintenance",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "selesai",
+                                        "enum": [
+                                            "dilaporkan",
+                                            "dalam_proses",
+                                            "selesai",
+                                            "ditunda"
+                                        ]
+                                    },
+                                    "material_cost": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150000,
+                                        "nullable": true
+                                    },
+                                    "labor_cost": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100000,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Pipa sudah diganti dan tersegel.",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status maintenance berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Status maintenance berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Maintenance"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/tagihan": {
+            "get": {
+                "tags": [
+                    "Petugas - Pembayaran"
+                ],
+                "summary": "Daftar tagihan belum bayar",
+                "operationId": "19060f7e48a3e2c874375e09fe03d9f3",
+                "parameters": [
+                    {
+                        "name": "zone_id",
+                        "in": "query",
+                        "description": "Filter zona",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Filter tahun periode",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2026
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Filter bulan periode",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 55
+                                                    },
+                                                    "customer_id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "customer_name": {
+                                                        "type": "string",
+                                                        "example": "Wayan Karya"
+                                                    },
+                                                    "customer_number": {
+                                                        "type": "string",
+                                                        "example": "PLG-0005"
+                                                    },
+                                                    "zone": {
+                                                        "type": "string",
+                                                        "example": "Zona A"
+                                                    },
+                                                    "period_year": {
+                                                        "type": "integer",
+                                                        "example": 2026
+                                                    },
+                                                    "period_month": {
+                                                        "type": "integer",
+                                                        "example": 6
+                                                    },
+                                                    "period_label": {
+                                                        "type": "string",
+                                                        "example": "Juni 2026"
+                                                    },
+                                                    "total_amount": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 31000
+                                                    },
+                                                    "remaining_amount": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 31000
+                                                    },
+                                                    "payment_status": {
+                                                        "type": "string",
+                                                        "example": "belum_bayar",
+                                                        "enum": [
+                                                            "belum_bayar",
+                                                            "sebagian"
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/payments": {
+            "post": {
+                "tags": [
+                    "Petugas - Pembayaran"
+                ],
+                "summary": "Konfirmasi pembayaran",
+                "description": "Mendukung pembayaran sebagian (cicilan). amount_paid tidak boleh melebihi sisa tagihan. Setelah konfirmasi, transaksi kas masuk otomatis tercatat.",
+                "operationId": "d437ea0fea191186ade2675b206a5ebe",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "water_reading_id",
+                                    "amount_paid",
+                                    "payment_date",
+                                    "payment_method"
+                                ],
+                                "properties": {
+                                    "water_reading_id": {
+                                        "type": "integer",
+                                        "example": 55
+                                    },
+                                    "amount_paid": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 31000
+                                    },
+                                    "payment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-09"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "tunai",
+                                        "enum": [
+                                            "tunai",
+                                            "transfer",
+                                            "qris"
+                                        ]
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Bayar lunas",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pembayaran berhasil dikonfirmasi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pembayaran berhasil dikonfirmasi."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PaymentRecord"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal / sudah lunas / melebihi sisa tagihan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/payments/{id}": {
+            "get": {
+                "tags": [
+                    "Petugas - Pembayaran"
+                ],
+                "summary": "Detail pembayaran",
+                "operationId": "aef57d6b8c4ff91f416ac9d71acf3fd3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID payment record",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PaymentRecord"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/customers": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Daftar pelanggan aktif",
+                "description": "Digunakan untuk mengisi dropdown pelanggan saat input meter.",
+                "operationId": "7beb832231a9d00d0677a407a90d206e",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "customer_number": {
+                                                        "type": "string",
+                                                        "example": "PLG-0005"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Wayan Karya"
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "example": "Banjar Kaja No. 12"
+                                                    },
+                                                    "zone": {
+                                                        "type": "string",
+                                                        "example": "Zona A"
+                                                    },
+                                                    "tariff": {
+                                                        "type": "string",
+                                                        "example": "Tarif Rumah Tangga"
+                                                    },
+                                                    "initial_meter": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 100
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 45
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/customers/{id}": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Detail pelanggan",
+                "description": "Profil pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 periode terakhir sebelum pembacaan terakhir).",
+                "operationId": "e00a07dab18cb36e15e83a104b89c623",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID pelanggan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Andi Suartika"
+                                                },
+                                                "customer_number": {
+                                                    "type": "string",
+                                                    "example": "PLG-2024-001"
+                                                },
+                                                "zone": {
+                                                    "type": "string",
+                                                    "example": "Lingkungan Sangket"
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "registered_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2024-01-10"
+                                                },
+                                                "tariff_group": {
+                                                    "type": "string",
+                                                    "example": "Rumah Tangga"
+                                                },
+                                                "price_per_m3": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 8000
+                                                },
+                                                "minimum_usage": {
+                                                    "description": "Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5
+                                                },
+                                                "minimum_charge": {
+                                                    "description": "Tagihan minimum walaupun pemakaian di bawah batas minimum",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 15000
+                                                },
+                                                "last_reading": {
+                                                    "properties": {
+                                                        "current_reading": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 145.5
+                                                        },
+                                                        "usage_m3": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 12.4
+                                                        },
+                                                        "period_label": {
+                                                            "type": "string",
+                                                            "example": "Juni 2026"
+                                                        },
+                                                        "reading_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "2025-06-14"
+                                                        },
+                                                        "payment_status": {
+                                                            "type": "string",
+                                                            "example": "lunas",
+                                                            "enum": [
+                                                                "belum_bayar",
+                                                                "sebagian",
+                                                                "lunas"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "billing_history": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "period_label": {
+                                                                "type": "string",
+                                                                "example": "Mei 2026"
+                                                            },
+                                                            "usage_m3": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 27.4
+                                                            },
+                                                            "total_amount": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 68500
+                                                            },
+                                                            "payment_status": {
+                                                                "type": "string",
+                                                                "example": "belum_bayar",
+                                                                "enum": [
+                                                                    "belum_bayar",
+                                                                    "sebagian",
+                                                                    "lunas"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/water-readings": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Daftar pembacaan meter per periode",
+                "operationId": "05c4e4235f803d3424fc7bc44daa60a6",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Filter tahun periode (default: tahun sekarang)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2026
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Filter bulan periode 1-12 (default: bulan sekarang)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/WaterReading"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "year": {
+                                                    "type": "integer",
+                                                    "example": 2026
+                                                },
+                                                "month": {
+                                                    "type": "integer",
+                                                    "example": 6
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Catat meter baru",
+                "description": "Sistem otomatis menghitung previous_reading, usage_m3, dan total_amount berdasarkan tarif pelanggan. Jika pelanggan sudah dicatat pada periode yang sama, request akan ditolak (422). Gunakan `multipart/form-data` jika menyertakan foto meter.",
+                "operationId": "ec2d94eafc6353dd7aff0e4c57b4b5bc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "customer_id",
+                                    "period_year",
+                                    "period_month",
+                                    "current_reading",
+                                    "reading_date"
+                                ],
+                                "properties": {
+                                    "customer_id": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "period_year": {
+                                        "type": "integer",
+                                        "example": 2026
+                                    },
+                                    "period_month": {
+                                        "type": "integer",
+                                        "example": 6
+                                    },
+                                    "current_reading": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 145.2
+                                    },
+                                    "reading_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-03"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Meteran normal",
+                                        "nullable": true
+                                    },
+                                    "photo": {
+                                        "description": "Foto meter (jpg/png/webp, maks 5MB)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pembacaan meter berhasil dicatat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pembacaan meter berhasil dicatat."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/WaterReading"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal / pelanggan sudah dicatat di periode ini",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/water-readings/{id}": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Detail pembacaan meter",
+                "operationId": "9ce15a44630b021cf0902c3680a7e7ea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID pembacaan meter",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/WaterReading"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ApiEnvelope": {
+                "title": "API Envelope",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "OK"
+                    },
+                    "data": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "meta": {
+                        "type": "object",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationErrorResponse": {
+                "title": "Validation Error Response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Data tidak valid."
+                    },
+                    "data": {
+                        "type": "object",
+                        "example": {
+                            "field": [
+                                "Pesan error validasi."
+                            ]
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UnauthorizedResponse": {
+                "title": "Unauthenticated Response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Unauthenticated. Token tidak valid atau sudah kedaluwarsa."
+                    },
+                    "data": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "meta": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ForbiddenResponse": {
+                "title": "Forbidden Response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Akses ditolak. Role Anda tidak memiliki izin."
+                    },
+                    "data": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "meta": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "WaterReading": {
+                "title": "Water Reading",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 55
+                    },
+                    "customer_id": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "customer_name": {
+                        "type": "string",
+                        "example": "Wayan Karya"
+                    },
+                    "customer_number": {
+                        "type": "string",
+                        "example": "PLG-0005"
+                    },
+                    "zone": {
+                        "type": "string",
+                        "example": "Zona A"
+                    },
+                    "officer_name": {
+                        "type": "string",
+                        "example": "Budi Santoso"
+                    },
+                    "period_year": {
+                        "type": "integer",
+                        "example": 2026
+                    },
+                    "period_month": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "period_label": {
+                        "type": "string",
+                        "example": "Juni 2026"
+                    },
+                    "reading_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-03"
+                    },
+                    "previous_reading": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 132.8
+                    },
+                    "current_reading": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 145.2
+                    },
+                    "usage_m3": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.4
+                    },
+                    "price_per_m3": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 2500
+                    },
+                    "minimum_charge": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 15000
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 31000
+                    },
+                    "payment_status": {
+                        "type": "string",
+                        "example": "belum_bayar",
+                        "enum": [
+                            "belum_bayar",
+                            "sebagian",
+                            "lunas"
+                        ]
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "Meteran normal",
+                        "nullable": true
+                    },
+                    "photo_url": {
+                        "type": "string",
+                        "example": "https://your-domain.com/storage/water-readings/abc123.jpg",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaymentRecord": {
+                "title": "Payment Record",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 30
+                    },
+                    "receipt_number": {
+                        "type": "string",
+                        "example": "KWT-20260609-0001"
+                    },
+                    "water_reading_id": {
+                        "type": "integer",
+                        "example": 55
+                    },
+                    "customer_id": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "period_label": {
+                        "type": "string",
+                        "example": "Juni 2026"
+                    },
+                    "amount_paid": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 31000
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-09"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "example": "tunai",
+                        "enum": [
+                            "tunai",
+                            "transfer",
+                            "qris"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "lunas",
+                        "enum": [
+                            "sebagian",
+                            "lunas"
+                        ]
+                    },
+                    "recorded_by": {
+                        "type": "string",
+                        "example": "Budi Santoso"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "Bayar lunas",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Maintenance": {
+                "title": "Maintenance",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 8
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Pipa bocor di Jl. Raya Desa"
+                    },
+                    "location": {
+                        "type": "string",
+                        "example": "Jl. Raya Desa No. 45"
+                    },
+                    "category": {
+                        "type": "string",
+                        "example": "pipa_bocor",
+                        "enum": [
+                            "pipa_bocor",
+                            "meteran_rusak",
+                            "pompa",
+                            "reservoir",
+                            "instalasi_baru",
+                            "lainnya"
+                        ]
+                    },
+                    "category_label": {
+                        "type": "string",
+                        "example": "Pipa Bocor"
+                    },
+                    "priority": {
+                        "type": "string",
+                        "example": "tinggi",
+                        "enum": [
+                            "rendah",
+                            "sedang",
+                            "tinggi",
+                            "darurat"
+                        ]
+                    },
+                    "priority_label": {
+                        "type": "string",
+                        "example": "Tinggi"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "dilaporkan",
+                        "enum": [
+                            "dilaporkan",
+                            "dalam_proses",
+                            "selesai",
+                            "ditunda"
+                        ]
+                    },
+                    "status_label": {
+                        "type": "string",
+                        "example": "Dilaporkan"
+                    },
+                    "zone": {
+                        "type": "string",
+                        "example": "Zona B",
+                        "nullable": true
+                    },
+                    "customer_name": {
+                        "type": "string",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "reported_by": {
+                        "type": "string",
+                        "example": "Budi Santoso"
+                    },
+                    "reported_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-08"
+                    },
+                    "handled_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "completed_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Air merembes dari sambungan pipa bawah tanah.",
+                        "nullable": true
+                    },
+                    "material_cost": {
+                        "type": "number",
+                        "format": "float",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "labor_cost": {
+                        "type": "number",
+                        "format": "float",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "total_cost": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    }
+                },
+                "type": "object"
+            },
+            "NotFoundResponse": {
+                "title": "Not Found Response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Data tidak ditemukan."
+                    },
+                    "data": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "meta": {
+                        "type": "object",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Gunakan token yang didapat dari endpoint /auth/login. Format header: Authorization: Bearer {token}",
+                "bearerFormat": "token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Login, profil, dan logout"
+        },
+        {
+            "name": "Pelanggan",
+            "description": "Endpoint khusus role pelanggan"
+        },
+        {
+            "name": "Petugas - Catat Meter",
+            "description": "Pencatatan meter air oleh petugas"
+        },
+        {
+            "name": "Petugas - Pembayaran",
+            "description": "Tagihan & konfirmasi pembayaran"
+        },
+        {
+            "name": "Petugas - Maintenance",
+            "description": "Laporan & penanganan maintenance"
+        }
+    ]
+}

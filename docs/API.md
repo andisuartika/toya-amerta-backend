@@ -363,7 +363,80 @@ GET /api/pelanggan/riwayat?limit=12
 
 ---
 
-### 3.1 Daftar Pelanggan Aktif
+### 3.1 Ringkasan Dashboard
+
+```
+GET /api/petugas/dashboard?year=2026&month=6
+```
+
+Mengembalikan statistik ringkas untuk halaman dashboard petugas: jumlah pelanggan aktif, jumlah yang sudah/belum dicatat pada periode tertentu, jumlah tagihan belum bayar, total kas yang terkumpul pada bulan tersebut, serta daftar gabungan pelanggan sudah dicatat dan belum dicatat (untuk tab "Sudah Dicatat" / "Belum Dicatat").
+
+**Query Parameter**
+
+| Parameter | Tipe | Default | Keterangan |
+|-----------|------|---------|-----------|
+| `year` | integer | tahun sekarang | Periode tahun yang dihitung |
+| `month` | integer | bulan sekarang | Periode bulan yang dihitung (1–12) |
+
+**Response 200**
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {
+    "active_customers": 45,
+    "recorded_count": 30,
+    "not_recorded_count": 15,
+    "unpaid_count": 12,
+    "total_collected": 540000,
+    "history": [
+      {
+        "water_reading_id": 55,
+        "customer_id": 5,
+        "customer_name": "Andi Suartika",
+        "customer_number": "PLG-2024-001",
+        "zone": "Lingkungan Sangket",
+        "recorded": true,
+        "reading_date": "2026-06-03",
+        "total_amount": 31000,
+        "amount_paid": 0,
+        "payment_status": "belum_bayar"
+      },
+      {
+        "water_reading_id": null,
+        "customer_id": 9,
+        "customer_name": "Wayan Karya",
+        "customer_number": "PLG-2024-009",
+        "zone": "Lingkungan Sangket",
+        "recorded": false,
+        "reading_date": null,
+        "total_amount": null,
+        "amount_paid": null,
+        "payment_status": "belum_dicatat"
+      }
+    ]
+  },
+  "meta": {
+    "year": 2026,
+    "month": 6
+  }
+}
+```
+
+| Field | Keterangan |
+|-------|-----------|
+| `active_customers` | Total pelanggan dengan status aktif |
+| `recorded_count` | Jumlah pelanggan yang sudah dicatat meternya pada periode ini |
+| `not_recorded_count` | Jumlah pelanggan aktif yang **belum** dicatat pada periode ini |
+| `unpaid_count` | Jumlah tagihan periode ini dengan status `belum_bayar` atau `sebagian` |
+| `total_collected` | Total nominal pembayaran yang masuk pada bulan ini (berdasarkan `payment_date`, bukan periode tagihan) |
+| `history` | Daftar gabungan pelanggan sudah & belum dicatat. Gunakan field `recorded` (`true`/`false`) untuk memisahkan ke tab "Sudah Dicatat" / "Belum Dicatat" di UI |
+| `history[].payment_status` | `belum_bayar`, `sebagian`, `lunas`, atau `belum_dicatat` (khusus item yang belum dicatat) |
+
+---
+
+### 3.2 Daftar Pelanggan Aktif
 
 ```
 GET /api/petugas/customers
@@ -396,7 +469,86 @@ Digunakan untuk mengisi dropdown saat input meter.
 
 ---
 
-### 3.2 Daftar Pembacaan Meter
+### 3.3 Detail Pelanggan
+
+```
+GET /api/petugas/customers/{id}
+```
+
+Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 periode sebelum pembacaan terakhir). Digunakan saat petugas membuka detail seorang pelanggan.
+
+**Path Parameter**
+
+| Parameter | Tipe | Keterangan |
+|-----------|------|-----------|
+| `id` | integer | ID pelanggan |
+
+**Response 200**
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {
+    "id": 5,
+    "name": "Andi Suartika",
+    "customer_number": "PLG-2024-001",
+    "zone": "Lingkungan Sangket",
+    "is_active": true,
+    "registered_date": "2024-01-10",
+    "tariff_group": "Rumah Tangga",
+    "price_per_m3": 8000,
+    "minimum_usage": 5,
+    "minimum_charge": 15000,
+    "last_reading": {
+      "current_reading": 145.5,
+      "usage_m3": 12.4,
+      "period_label": "Juni 2026",
+      "reading_date": "2025-06-14",
+      "payment_status": "lunas"
+    },
+    "billing_history": [
+      {
+        "period_label": "Mei 2026",
+        "usage_m3": 27.4,
+        "total_amount": 68500,
+        "payment_status": "belum_bayar"
+      },
+      {
+        "period_label": "April 2026",
+        "usage_m3": 21.5,
+        "total_amount": 72500,
+        "payment_status": "sebagian"
+      }
+    ]
+  },
+  "meta": null
+}
+```
+
+| Field | Keterangan |
+|-------|-----------|
+| `registered_date` | Tanggal pemasangan/instalasi pelanggan |
+| `tariff_group` | Nama golongan tarif pelanggan |
+| `minimum_usage` | Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh |
+| `minimum_charge` | Tagihan minimum walaupun pemakaian di bawah `minimum_usage`. Gunakan field ini bersama `price_per_m3` & `minimum_usage` untuk menghitung estimasi tagihan di Flutter sebelum submit, supaya hasilnya konsisten dengan kalkulasi backend |
+| `last_reading` | Pembacaan meter paling baru. `null` jika belum pernah dicatat sama sekali |
+| `billing_history` | Maksimal 5 periode tagihan sebelum `last_reading`, urut dari terbaru |
+
+**Response 404 — Pelanggan tidak ditemukan**
+
+```json
+{
+  "success": false,
+  "message": "Data tidak ditemukan.",
+  "data": null,
+  "meta": null
+}
+```
+
+---
+
+### 3.4 Daftar Pembacaan Meter
 
 ```
 GET /api/petugas/water-readings?year=2026&month=6
@@ -447,11 +599,13 @@ GET /api/petugas/water-readings?year=2026&month=6
 
 ---
 
-### 3.3 Catat Meter Baru
+### 3.5 Catat Meter Baru
 
 ```
 POST /api/petugas/water-readings
 ```
+
+> **Content-Type:** `multipart/form-data` (wajib jika menyertakan foto meter, boleh `application/json` jika tanpa foto).
 
 **Request Body**
 
@@ -462,7 +616,8 @@ POST /api/petugas/water-readings
   "period_month": 6,
   "current_reading": 145.20,
   "reading_date": "2026-06-03",
-  "notes": "Meteran normal"
+  "notes": "Meteran normal",
+  "photo": "(file binary, opsional)"
 }
 ```
 
@@ -474,6 +629,7 @@ POST /api/petugas/water-readings
 | `current_reading` | float | Ya | Angka meter saat ini |
 | `reading_date` | string (Y-m-d) | Ya | Tanggal catat meter |
 | `notes` | string | Tidak | Catatan tambahan |
+| `photo` | file (jpg/png/webp) | Tidak | Foto meter, maksimal 5MB |
 
 > **Catatan:** Sistem otomatis menghitung `previous_reading`, `usage_m3`, dan `total_amount` berdasarkan tarif pelanggan. Jika pelanggan sudah dicatat pada periode yang sama, request akan ditolak (422).
 
@@ -501,25 +657,30 @@ POST /api/petugas/water-readings
     "minimum_charge": 15000.00,
     "total_amount": 31000.00,
     "payment_status": "belum_bayar",
-    "notes": "Meteran normal"
+    "notes": "Meteran normal",
+    "photo_url": "https://your-domain.com/storage/water-readings/abc123.jpg"
   },
   "meta": null
 }
 ```
 
+| Field | Keterangan |
+|-------|-----------|
+| `photo_url` | URL publik foto meter. `null` jika tidak ada foto yang diunggah |
+
 ---
 
-### 3.4 Detail Pembacaan Meter
+### 3.6 Detail Pembacaan Meter
 
 ```
 GET /api/petugas/water-readings/{id}
 ```
 
-**Response 200** — Struktur sama dengan item pada [3.3](#33-catat-meter-baru).
+**Response 200** — Struktur sama dengan item pada [3.5](#35-catat-meter-baru).
 
 ---
 
-### 3.5 Tagihan Belum Bayar
+### 3.7 Tagihan Belum Bayar
 
 ```
 GET /api/petugas/tagihan?zone_id=1&year=2026&month=6
@@ -562,7 +723,7 @@ GET /api/petugas/tagihan?zone_id=1&year=2026&month=6
 
 ---
 
-### 3.6 Konfirmasi Pembayaran
+### 3.8 Konfirmasi Pembayaran
 
 ```
 POST /api/petugas/payments
@@ -620,17 +781,17 @@ POST /api/petugas/payments
 
 ---
 
-### 3.7 Detail Pembayaran
+### 3.9 Detail Pembayaran
 
 ```
 GET /api/petugas/payments/{id}
 ```
 
-**Response 200** — Struktur sama dengan item pada [3.6](#36-konfirmasi-pembayaran).
+**Response 200** — Struktur sama dengan item pada [3.8](#38-konfirmasi-pembayaran).
 
 ---
 
-### 3.8 Daftar Laporan Maintenance
+### 3.10 Daftar Laporan Maintenance
 
 ```
 GET /api/petugas/maintenance?status=dilaporkan&priority=darurat
@@ -693,7 +854,7 @@ GET /api/petugas/maintenance?status=dilaporkan&priority=darurat
 
 ---
 
-### 3.9 Buat Laporan Maintenance
+### 3.11 Buat Laporan Maintenance
 
 ```
 POST /api/petugas/maintenance
@@ -720,7 +881,7 @@ POST /api/petugas/maintenance
 |-------|------|-------|-----------|
 | `title` | string | Ya | Judul singkat laporan |
 | `location` | string | Ya | Lokasi kejadian |
-| `category` | string | Ya | Lihat tabel kategori di [3.8](#38-daftar-laporan-maintenance) |
+| `category` | string | Ya | Lihat tabel kategori di [3.10](#310-daftar-laporan-maintenance) |
 | `priority` | string | Ya | `rendah`, `sedang`, `tinggi`, `darurat` |
 | `reported_date` | string (Y-m-d) | Ya | Tanggal laporan |
 | `zone_id` | integer | Tidak | ID zona terdampak |
@@ -729,21 +890,21 @@ POST /api/petugas/maintenance
 | `material_cost` | float | Tidak | Estimasi biaya material |
 | `labor_cost` | float | Tidak | Estimasi biaya tenaga kerja |
 
-**Response 201** — Struktur sama dengan item pada [3.8](#38-daftar-laporan-maintenance).
+**Response 201** — Struktur sama dengan item pada [3.10](#310-daftar-laporan-maintenance).
 
 ---
 
-### 3.10 Detail Maintenance
+### 3.12 Detail Maintenance
 
 ```
 GET /api/petugas/maintenance/{id}
 ```
 
-**Response 200** — Struktur sama dengan item pada [3.8](#38-daftar-laporan-maintenance).
+**Response 200** — Struktur sama dengan item pada [3.10](#310-daftar-laporan-maintenance).
 
 ---
 
-### 3.11 Update Status Maintenance
+### 3.13 Update Status Maintenance
 
 ```
 PATCH /api/petugas/maintenance/{id}/status
@@ -794,6 +955,13 @@ PATCH /api/petugas/maintenance/{id}/status
 ---
 
 ## Alur Penggunaan Tipikal
+
+### Petugas — Buka Dashboard
+
+```
+1. POST /api/auth/login        → dapat token
+2. GET  /api/petugas/dashboard → tampilkan statistik & history pencatatan
+```
 
 ### Petugas — Input Meter & Terima Bayar
 

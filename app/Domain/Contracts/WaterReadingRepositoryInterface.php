@@ -2,6 +2,7 @@
 
 namespace App\Domain\Contracts;
 
+use App\Domain\DTOs\WaterReading\ImportReadingDTO;
 use App\Domain\DTOs\WaterReading\WaterReadingDTO;
 use App\Models\WaterReading;
 use Illuminate\Support\Collection;
@@ -9,6 +10,9 @@ use Illuminate\Support\Collection;
 interface WaterReadingRepositoryInterface
 {
     public function create(WaterReadingDTO $dto): WaterReading;
+
+    /** Buat pencatatan dari data historis — previous_reading & total_amount diambil langsung dari sumber import, tidak dihitung ulang */
+    public function createImported(ImportReadingDTO $dto): WaterReading;
 
     public function findById(int $id): WaterReading;
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\ApiAuthController;
 use App\Http\Controllers\Api\Pelanggan\PelangganController;
+use App\Http\Controllers\Api\Petugas\DashboardApiController;
 use App\Http\Controllers\Api\Petugas\MaintenanceApiController;
 use App\Http\Controllers\Api\Petugas\PaymentApiController;
 use App\Http\Controllers\Api\Petugas\WaterReadingApiController;
@@ -35,8 +36,12 @@ Route::middleware(['auth:sanctum', 'role:pelanggan'])
 Route::middleware(['auth:sanctum', 'role:petugas|admin'])
     ->prefix('petugas')
     ->group(function () {
+        // Dashboard
+        Route::get('dashboard', [DashboardApiController::class, 'index']);
+
         // Daftar pelanggan aktif (untuk dropdown input meter)
         Route::get('customers', [WaterReadingApiController::class, 'customers']);
+        Route::get('customers/{id}', [WaterReadingApiController::class, 'customerDetail']);
 
         // Catat meter
         Route::get('water-readings', [WaterReadingApiController::class, 'index']);

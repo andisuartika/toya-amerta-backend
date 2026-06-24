@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PdamBillController;
 use App\Http\Controllers\Admin\NewCustomerFeeController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\WaterReadingController;
+use App\Http\Controllers\Admin\WaterReadingImportController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TariffRateController;
 use App\Http\Controllers\Admin\UserController;
@@ -86,6 +87,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::get('water-readings',                      [WaterReadingController::class, 'index'])->name('water-readings.index');
         Route::post('water-readings',                     [WaterReadingController::class, 'store'])->name('water-readings.store');
         Route::delete('water-readings/{waterReading}',   [WaterReadingController::class, 'destroy'])->name('water-readings.destroy');
+
+        // Import Data Historis
+        Route::get('water-readings/import',          [WaterReadingImportController::class, 'create'])->name('water-readings.import.create');
+        Route::get('water-readings/import/template', [WaterReadingImportController::class, 'template'])->name('water-readings.import.template');
+        Route::post('water-readings/import/preview', [WaterReadingImportController::class, 'preview'])->name('water-readings.import.preview');
+        Route::post('water-readings/import',         [WaterReadingImportController::class, 'store'])->name('water-readings.import.store');
 
         // Rekap Keuangan
         Route::get('financial-report', [FinancialReportController::class, 'index'])->name('financial-report.index');

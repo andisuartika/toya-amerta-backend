@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Domain\Contracts\WaterReadingRepositoryInterface;
+use App\Domain\DTOs\WaterReading\ImportReadingDTO;
 use App\Domain\DTOs\WaterReading\WaterReadingDTO;
 use App\Models\Customer;
 use App\Models\WaterReading;
@@ -37,6 +38,30 @@ class WaterReadingRepository implements WaterReadingRepositoryInterface
             'total_amount'     => $totalAmount,
             'reading_date'     => $dto->reading_date,
             'notes'            => $dto->notes,
+            'photo_url'        => $dto->photo_url,
+            'payment_status'   => 'belum_bayar',
+        ]);
+    }
+
+    public function createImported(ImportReadingDTO $dto): WaterReading
+    {
+        $customer = Customer::with('tariffRate')->findOrFail($dto->customer_id);
+        $tariff   = $customer->tariffRate;
+
+        return WaterReading::create([
+            'customer_id'      => $dto->customer_id,
+            'officer_id'       => $dto->officer_id,
+            'period_year'      => $dto->period_year,
+            'period_month'     => $dto->period_month,
+            'previous_reading' => $dto->previous_reading,
+            'current_reading'  => $dto->current_reading,
+            'tariff_rate_id'   => $tariff?->id,
+            'price_per_m3'     => $dto->price_per_m3,
+            'minimum_charge'   => $tariff?->minimum_charge,
+            'minimum_usage'    => $tariff?->minimum_usage,
+            'total_amount'     => $dto->total_amount,
+            'reading_date'     => $dto->reading_date,
+            'notes'            => 'Diimpor dari data historis',
             'payment_status'   => 'belum_bayar',
         ]);
     }

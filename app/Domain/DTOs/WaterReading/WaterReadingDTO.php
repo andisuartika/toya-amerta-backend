@@ -12,6 +12,7 @@ readonly class WaterReadingDTO
         public float  $current_reading,
         public string $reading_date,
         public ?string $notes,
+        public ?string $photo_url = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -24,6 +25,7 @@ readonly class WaterReadingDTO
             current_reading: (float) $data['current_reading'],
             reading_date:   $data['reading_date'],
             notes:          $data['notes'] ?? null,
+            photo_url:      $data['photo_url'] ?? null,
         );
     }
 }

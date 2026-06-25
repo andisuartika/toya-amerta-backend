@@ -105,7 +105,8 @@ Tidak memerlukan token. Mengembalikan Bearer token untuk request berikutnya.
       "name": "Budi Santoso",
       "email": "petugas@toya.desa.id",
       "phone": "081234567890",
-      "role": "petugas"
+      "role": "petugas",
+      "photo_url": null
     }
   },
   "meta": null
@@ -161,7 +162,8 @@ Authorization: Bearer {token}
     "name": "Budi Santoso",
     "email": "petugas@toya.desa.id",
     "phone": "081234567890",
-    "role": "petugas"
+    "role": "petugas",
+    "photo_url": null
   },
   "meta": null
 }
@@ -179,6 +181,7 @@ Authorization: Bearer {token}
     "email": "wayan@gmail.com",
     "phone": "082233445566",
     "role": "pelanggan",
+    "photo_url": "https://your-domain.com/storage/avatars/abc123.jpg",
     "customer": {
       "id": 5,
       "customer_number": "PLG-0005",
@@ -194,7 +197,74 @@ Authorization: Bearer {token}
 
 ---
 
-### 1.3 Logout
+### 1.3 Update Profil
+
+```
+POST /api/auth/profile
+```
+
+> **Content-Type:** `multipart/form-data` jika menyertakan foto, boleh `application/json` jika tanpa foto.
+
+Semua field opsional — kirim hanya field yang ingin diubah.
+
+**Request Body**
+
+```json
+{
+  "name": "Budi Santoso",
+  "phone": "081234567890",
+  "email": "budi@toya.desa.id",
+  "photo": "(file binary, opsional)",
+  "current_password": "rahasia123",
+  "password": "rahasiabaru123",
+  "password_confirmation": "rahasiabaru123"
+}
+```
+
+| Field | Tipe | Wajib | Keterangan |
+|-------|------|-------|-----------|
+| `name` | string | Tidak | Nama pengguna |
+| `phone` | string | Tidak | No. telepon |
+| `email` | string | Tidak | Harus unik (dicek terhadap user lain) |
+| `photo` | file (jpg/png/webp) | Tidak | Foto profil, maksimal 2MB |
+| `current_password` | string | **Wajib jika mengganti password** | Password saat ini, untuk verifikasi |
+| `password` | string | Tidak | Password baru, minimal 6 karakter |
+| `password_confirmation` | string | **Wajib jika mengisi `password`** | Harus sama dengan `password` |
+
+**Response 200 — Berhasil**
+
+```json
+{
+  "success": true,
+  "message": "Profil berhasil diperbarui.",
+  "data": {
+    "id": 3,
+    "name": "Budi Santoso",
+    "email": "budi@toya.desa.id",
+    "phone": "081234567890",
+    "role": "petugas",
+    "photo_url": "https://your-domain.com/storage/avatars/abc123.jpg"
+  },
+  "meta": null
+}
+```
+
+**Response 422 — Password saat ini salah**
+
+```json
+{
+  "success": false,
+  "message": "Data tidak valid.",
+  "data": {
+    "current_password": ["Password saat ini tidak sesuai."]
+  },
+  "meta": null
+}
+```
+
+---
+
+### 1.4 Logout
 
 ```
 POST /api/auth/logout
@@ -548,7 +618,193 @@ Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 perio
 
 ---
 
-### 3.4 Daftar Pembacaan Meter
+### 3.4 Opsi Zona & Tarif (Form Tambah/Edit Pelanggan)
+
+```
+GET /api/petugas/customers/form-options
+```
+
+Mengembalikan daftar zona aktif dan golongan tarif aktif untuk mengisi dropdown pada form tambah/edit pelanggan.
+
+**Response 200**
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {
+    "zones": [
+      { "id": 1, "name": "Zona A", "code": "ZN-A" },
+      { "id": 2, "name": "Zona B", "code": "ZN-B" }
+    ],
+    "tariffs": [
+      {
+        "id": 1,
+        "name": "Tarif Rumah Tangga",
+        "price_per_m3": 2500.00,
+        "minimum_charge": 15000.00,
+        "minimum_usage": 5.00
+      }
+    ]
+  },
+  "meta": null
+}
+```
+
+| Field | Keterangan |
+|-------|-----------|
+| `zones` | Hanya zona dengan `is_active = true` |
+| `tariffs` | Hanya golongan tarif dengan `is_active = true`. Gunakan `price_per_m3`, `minimum_charge`, `minimum_usage` untuk preview estimasi tagihan di form |
+
+---
+
+### 3.5 Tambah Pelanggan
+
+```
+POST /api/petugas/customers
+```
+
+**Request Body**
+
+```json
+{
+  "customer_number": null,
+  "name": "Wayan Karya",
+  "address": "Banjar Kaja No. 12",
+  "phone": "082233445566",
+  "zone_id": 1,
+  "tariff_rate_id": 1,
+  "installation_date": "2026-06-24",
+  "initial_meter": 0,
+  "is_active": true,
+  "notes": null,
+  "user_id": null
+}
+```
+
+| Field | Tipe | Wajib | Keterangan |
+|-------|------|-------|-----------|
+| `customer_number` | string | Tidak | Dikosongkan (`null`) untuk generate otomatis format `PDAM-2026-0001` |
+| `name` | string | Ya | Nama pelanggan |
+| `address` | string | Ya | Alamat lengkap |
+| `phone` | string | Tidak | Format nomor telepon (`0-9`, `+`, `-`, spasi) |
+| `zone_id` | integer | Ya | ID zona, harus ada di tabel `zones` |
+| `tariff_rate_id` | integer | Ya | ID golongan tarif, harus ada di tabel `tariff_rates` |
+| `installation_date` | string (Y-m-d) | Tidak | Tanggal pemasangan |
+| `initial_meter` | float | Tidak | Angka meter awal, default `0` |
+| `is_active` | boolean | Tidak | Status aktif, default `true` |
+| `notes` | string | Tidak | Catatan tambahan |
+| `user_id` | integer | Tidak | Hubungkan ke akun login pelanggan (untuk fitur cek tagihan di app pelanggan) |
+
+**Response 201 — Berhasil**
+
+```json
+{
+  "success": true,
+  "message": "Pelanggan berhasil ditambahkan.",
+  "data": {
+    "id": 5,
+    "user_id": null,
+    "customer_number": "PDAM-2026-0001",
+    "name": "Wayan Karya",
+    "address": "Banjar Kaja No. 12",
+    "phone": "082233445566",
+    "zone_id": 1,
+    "zone": "Zona A",
+    "tariff_rate_id": 1,
+    "tariff_name": "Tarif Rumah Tangga",
+    "installation_date": "2026-06-24",
+    "initial_meter": 0,
+    "is_active": true,
+    "notes": null
+  },
+  "meta": null
+}
+```
+
+---
+
+### 3.6 Update Pelanggan
+
+```
+PUT /api/petugas/customers/{id}
+```
+
+**Path Parameter**
+
+| Parameter | Tipe | Keterangan |
+|-----------|------|-----------|
+| `id` | integer | ID pelanggan |
+
+**Request Body** — sama seperti [3.5](#35-tambah-pelanggan), semua field wajib diisi ulang (bukan partial update).
+
+**Response 200 — Berhasil**
+
+```json
+{
+  "success": true,
+  "message": "Pelanggan berhasil diperbarui.",
+  "data": {
+    "id": 5,
+    "user_id": null,
+    "customer_number": "PDAM-2026-0001",
+    "name": "Wayan Karya",
+    "address": "Banjar Kaja No. 12 (Update)",
+    "phone": "082233445566",
+    "zone_id": 1,
+    "zone": "Zona A",
+    "tariff_rate_id": 1,
+    "tariff_name": "Tarif Rumah Tangga",
+    "installation_date": "2026-06-24",
+    "initial_meter": 0,
+    "is_active": true,
+    "notes": null
+  },
+  "meta": null
+}
+```
+
+**Response 404 — Pelanggan tidak ditemukan**
+
+```json
+{
+  "success": false,
+  "message": "Data tidak ditemukan.",
+  "data": null,
+  "meta": null
+}
+```
+
+---
+
+### 3.7 Hapus Pelanggan
+
+```
+DELETE /api/petugas/customers/{id}
+```
+
+> Soft delete — data tidak dihapus permanen dari database, hanya ditandai terhapus (`deleted_at`).
+
+**Path Parameter**
+
+| Parameter | Tipe | Keterangan |
+|-----------|------|-----------|
+| `id` | integer | ID pelanggan |
+
+**Response 200 — Berhasil**
+
+```json
+{
+  "success": true,
+  "message": "Pelanggan berhasil dihapus.",
+  "data": null,
+  "meta": null
+}
+```
+
+---
+
+### 3.8 Daftar Pembacaan Meter
 
 ```
 GET /api/petugas/water-readings?year=2026&month=6
@@ -599,7 +855,7 @@ GET /api/petugas/water-readings?year=2026&month=6
 
 ---
 
-### 3.5 Catat Meter Baru
+### 3.9 Catat Meter Baru
 
 ```
 POST /api/petugas/water-readings
@@ -670,17 +926,17 @@ POST /api/petugas/water-readings
 
 ---
 
-### 3.6 Detail Pembacaan Meter
+### 3.10 Detail Pembacaan Meter
 
 ```
 GET /api/petugas/water-readings/{id}
 ```
 
-**Response 200** — Struktur sama dengan item pada [3.5](#35-catat-meter-baru).
+**Response 200** — Struktur sama dengan item pada [3.9](#39-catat-meter-baru).
 
 ---
 
-### 3.7 Tagihan Belum Bayar
+### 3.11 Tagihan Belum Bayar
 
 ```
 GET /api/petugas/tagihan?zone_id=1&year=2026&month=6
@@ -723,7 +979,7 @@ GET /api/petugas/tagihan?zone_id=1&year=2026&month=6
 
 ---
 
-### 3.8 Konfirmasi Pembayaran
+### 3.12 Konfirmasi Pembayaran
 
 ```
 POST /api/petugas/payments
@@ -781,17 +1037,17 @@ POST /api/petugas/payments
 
 ---
 
-### 3.9 Detail Pembayaran
+### 3.13 Detail Pembayaran
 
 ```
 GET /api/petugas/payments/{id}
 ```
 
-**Response 200** — Struktur sama dengan item pada [3.8](#38-konfirmasi-pembayaran).
+**Response 200** — Struktur sama dengan item pada [3.12](#312-konfirmasi-pembayaran).
 
 ---
 
-### 3.10 Daftar Laporan Maintenance
+### 3.14 Daftar Laporan Maintenance
 
 ```
 GET /api/petugas/maintenance?status=dilaporkan&priority=darurat
@@ -854,7 +1110,7 @@ GET /api/petugas/maintenance?status=dilaporkan&priority=darurat
 
 ---
 
-### 3.11 Buat Laporan Maintenance
+### 3.15 Buat Laporan Maintenance
 
 ```
 POST /api/petugas/maintenance
@@ -881,7 +1137,7 @@ POST /api/petugas/maintenance
 |-------|------|-------|-----------|
 | `title` | string | Ya | Judul singkat laporan |
 | `location` | string | Ya | Lokasi kejadian |
-| `category` | string | Ya | Lihat tabel kategori di [3.10](#310-daftar-laporan-maintenance) |
+| `category` | string | Ya | Lihat tabel kategori di [3.14](#314-daftar-laporan-maintenance) |
 | `priority` | string | Ya | `rendah`, `sedang`, `tinggi`, `darurat` |
 | `reported_date` | string (Y-m-d) | Ya | Tanggal laporan |
 | `zone_id` | integer | Tidak | ID zona terdampak |
@@ -890,21 +1146,21 @@ POST /api/petugas/maintenance
 | `material_cost` | float | Tidak | Estimasi biaya material |
 | `labor_cost` | float | Tidak | Estimasi biaya tenaga kerja |
 
-**Response 201** — Struktur sama dengan item pada [3.10](#310-daftar-laporan-maintenance).
+**Response 201** — Struktur sama dengan item pada [3.14](#314-daftar-laporan-maintenance).
 
 ---
 
-### 3.12 Detail Maintenance
+### 3.16 Detail Maintenance
 
 ```
 GET /api/petugas/maintenance/{id}
 ```
 
-**Response 200** — Struktur sama dengan item pada [3.10](#310-daftar-laporan-maintenance).
+**Response 200** — Struktur sama dengan item pada [3.14](#314-daftar-laporan-maintenance).
 
 ---
 
-### 3.13 Update Status Maintenance
+### 3.17 Update Status Maintenance
 
 ```
 PATCH /api/petugas/maintenance/{id}/status

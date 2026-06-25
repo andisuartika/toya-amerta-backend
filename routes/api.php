@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\ApiAuthController;
 use App\Http\Controllers\Api\Pelanggan\PelangganController;
+use App\Http\Controllers\Api\Petugas\CustomerApiController;
 use App\Http\Controllers\Api\Petugas\DashboardApiController;
 use App\Http\Controllers\Api\Petugas\MaintenanceApiController;
 use App\Http\Controllers\Api\Petugas\PaymentApiController;
@@ -19,6 +20,7 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', [ApiAuthController::class, 'me']);
+        Route::post('profile', [ApiAuthController::class, 'updateProfile']);
         Route::post('logout', [ApiAuthController::class, 'logout']);
     });
 });
@@ -39,9 +41,18 @@ Route::middleware(['auth:sanctum', 'role:petugas|admin'])
         // Dashboard
         Route::get('dashboard', [DashboardApiController::class, 'index']);
 
-        // Daftar pelanggan aktif (untuk dropdown input meter)
+        // Daftar pelanggan aktif (untuk dropdown input meter) & detail (riwayat pembacaan)
         Route::get('customers', [WaterReadingApiController::class, 'customers']);
+
+        // Opsi zona & tarif untuk form tambah/edit pelanggan (didaftarkan sebelum customers/{id})
+        Route::get('customers/form-options', [CustomerApiController::class, 'formOptions']);
+
         Route::get('customers/{id}', [WaterReadingApiController::class, 'customerDetail']);
+
+        // CRUD data master pelanggan
+        Route::post('customers', [CustomerApiController::class, 'store']);
+        Route::put('customers/{id}', [CustomerApiController::class, 'update']);
+        Route::delete('customers/{id}', [CustomerApiController::class, 'destroy']);
 
         // Catat meter
         Route::get('water-readings', [WaterReadingApiController::class, 'index']);

@@ -25,6 +25,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Auth', description: 'Login, profil, dan logout')]
 #[OA\Tag(name: 'Pelanggan', description: 'Endpoint khusus role pelanggan')]
 #[OA\Tag(name: 'Petugas - Catat Meter', description: 'Pencatatan meter air oleh petugas')]
+#[OA\Tag(name: 'Petugas - Pelanggan', description: 'CRUD data master pelanggan')]
 #[OA\Tag(name: 'Petugas - Pembayaran', description: 'Tagihan & konfirmasi pembayaran')]
 #[OA\Tag(name: 'Petugas - Maintenance', description: 'Laporan & penanganan maintenance')]
 
@@ -137,6 +138,26 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'material_cost', type: 'number', format: 'float', nullable: true, example: null),
         new OA\Property(property: 'labor_cost', type: 'number', format: 'float', nullable: true, example: null),
         new OA\Property(property: 'total_cost', type: 'number', format: 'float', example: 0),
+    ]
+)]
+#[OA\Schema(
+    schema: 'CustomerDetail',
+    title: 'Customer Detail',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 5),
+        new OA\Property(property: 'user_id', type: 'integer', nullable: true, example: null),
+        new OA\Property(property: 'customer_number', type: 'string', example: 'PDAM-2026-0001'),
+        new OA\Property(property: 'name', type: 'string', example: 'Wayan Karya'),
+        new OA\Property(property: 'address', type: 'string', example: 'Banjar Kaja No. 12'),
+        new OA\Property(property: 'phone', type: 'string', nullable: true, example: '082233445566'),
+        new OA\Property(property: 'zone_id', type: 'integer', example: 1),
+        new OA\Property(property: 'zone', type: 'string', example: 'Zona A'),
+        new OA\Property(property: 'tariff_rate_id', type: 'integer', example: 1),
+        new OA\Property(property: 'tariff_name', type: 'string', example: 'Tarif Rumah Tangga'),
+        new OA\Property(property: 'installation_date', type: 'string', format: 'date', nullable: true, example: '2026-06-24'),
+        new OA\Property(property: 'initial_meter', type: 'number', format: 'float', example: 0),
+        new OA\Property(property: 'is_active', type: 'boolean', example: true),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: null),
     ]
 )]
 #[OA\Schema(

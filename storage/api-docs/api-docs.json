@@ -92,6 +92,11 @@
                                                         "role": {
                                                             "type": "string",
                                                             "example": "petugas"
+                                                        },
+                                                        "photo_url": {
+                                                            "type": "string",
+                                                            "example": null,
+                                                            "nullable": true
                                                         }
                                                     },
                                                     "type": "object"
@@ -178,6 +183,11 @@
                                                     "type": "string",
                                                     "example": "pelanggan"
                                                 },
+                                                "photo_url": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
                                                 "customer": {
                                                     "properties": {
                                                         "id": {
@@ -228,6 +238,151 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update profil pengguna",
+                "description": "Update nama, no. telepon, email, foto profil, dan/atau password. Semua field opsional — kirim hanya field yang ingin diubah. Untuk ganti password, sertakan `current_password`, `password`, dan `password_confirmation`. Gunakan `multipart/form-data` jika menyertakan foto.",
+                "operationId": "98bbdc9e974f90a6c2e62d8f02d49755",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Budi Santoso",
+                                        "nullable": true
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "081234567890",
+                                        "nullable": true
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "budi@toya.desa.id",
+                                        "nullable": true
+                                    },
+                                    "photo": {
+                                        "description": "Foto profil (jpg/png/webp, maks 2MB)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "current_password": {
+                                        "description": "Wajib jika mengganti password",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "rahasia123",
+                                        "nullable": true
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "rahasiabaru123",
+                                        "nullable": true
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "rahasiabaru123",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Budi Santoso"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "budi@toya.desa.id"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "081234567890"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "petugas"
+                                                },
+                                                "photo_url": {
+                                                    "type": "string",
+                                                    "example": "https://your-domain.com/storage/avatars/abc123.jpg",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal / password saat ini salah",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
                                 }
                             }
                         }
@@ -683,6 +838,822 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/customers/form-options": {
+            "get": {
+                "tags": [
+                    "Petugas - Pelanggan"
+                ],
+                "summary": "Opsi zona & tarif untuk form tambah/edit pelanggan",
+                "description": "Daftar zona aktif dan golongan tarif aktif, dipakai untuk mengisi dropdown saat tambah/edit pelanggan.",
+                "operationId": "363223e864fbe195bc677d1bda60c981",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "zones": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Zona A"
+                                                            },
+                                                            "code": {
+                                                                "type": "string",
+                                                                "example": "ZN-A",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "tariffs": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Tarif Rumah Tangga"
+                                                            },
+                                                            "price_per_m3": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 2500
+                                                            },
+                                                            "minimum_charge": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 15000
+                                                            },
+                                                            "minimum_usage": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 5
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/customers": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Daftar pelanggan aktif",
+                "description": "Digunakan untuk mengisi dropdown pelanggan saat input meter.",
+                "operationId": "7beb832231a9d00d0677a407a90d206e",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "customer_number": {
+                                                        "type": "string",
+                                                        "example": "PLG-0005"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Wayan Karya"
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "example": "Banjar Kaja No. 12"
+                                                    },
+                                                    "zone": {
+                                                        "type": "string",
+                                                        "example": "Zona A"
+                                                    },
+                                                    "tariff": {
+                                                        "type": "string",
+                                                        "example": "Tarif Rumah Tangga"
+                                                    },
+                                                    "initial_meter": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 100
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 45
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Petugas - Pelanggan"
+                ],
+                "summary": "Tambah pelanggan baru",
+                "operationId": "8980d98d5390712a9395edcd6bb1e060",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address",
+                                    "zone_id",
+                                    "tariff_rate_id"
+                                ],
+                                "properties": {
+                                    "customer_number": {
+                                        "description": "Dikosongkan untuk generate otomatis",
+                                        "type": "string",
+                                        "example": "PDAM-2026-0001",
+                                        "nullable": true
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Wayan Karya"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Banjar Kaja No. 12"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "082233445566",
+                                        "nullable": true
+                                    },
+                                    "zone_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tariff_rate_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "installation_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-24",
+                                        "nullable": true
+                                    },
+                                    "initial_meter": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 0,
+                                        "nullable": true
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": null,
+                                        "nullable": true
+                                    },
+                                    "user_id": {
+                                        "description": "Hubungkan ke akun login pelanggan (opsional)",
+                                        "type": "integer",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pelanggan berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pelanggan berhasil ditambahkan."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CustomerDetail"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/petugas/customers/{id}": {
+            "get": {
+                "tags": [
+                    "Petugas - Catat Meter"
+                ],
+                "summary": "Detail pelanggan",
+                "description": "Profil pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 periode terakhir sebelum pembacaan terakhir).",
+                "operationId": "e00a07dab18cb36e15e83a104b89c623",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID pelanggan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Andi Suartika"
+                                                },
+                                                "customer_number": {
+                                                    "type": "string",
+                                                    "example": "PLG-2024-001"
+                                                },
+                                                "zone": {
+                                                    "type": "string",
+                                                    "example": "Lingkungan Sangket"
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "registered_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2024-01-10"
+                                                },
+                                                "tariff_group": {
+                                                    "type": "string",
+                                                    "example": "Rumah Tangga"
+                                                },
+                                                "price_per_m3": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 8000
+                                                },
+                                                "minimum_usage": {
+                                                    "description": "Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5
+                                                },
+                                                "minimum_charge": {
+                                                    "description": "Tagihan minimum walaupun pemakaian di bawah batas minimum",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 15000
+                                                },
+                                                "last_reading": {
+                                                    "properties": {
+                                                        "current_reading": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 145.5
+                                                        },
+                                                        "usage_m3": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 12.4
+                                                        },
+                                                        "period_label": {
+                                                            "type": "string",
+                                                            "example": "Juni 2026"
+                                                        },
+                                                        "reading_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "2025-06-14"
+                                                        },
+                                                        "payment_status": {
+                                                            "type": "string",
+                                                            "example": "lunas",
+                                                            "enum": [
+                                                                "belum_bayar",
+                                                                "sebagian",
+                                                                "lunas"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "billing_history": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "period_label": {
+                                                                "type": "string",
+                                                                "example": "Mei 2026"
+                                                            },
+                                                            "usage_m3": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 27.4
+                                                            },
+                                                            "total_amount": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 68500
+                                                            },
+                                                            "payment_status": {
+                                                                "type": "string",
+                                                                "example": "belum_bayar",
+                                                                "enum": [
+                                                                    "belum_bayar",
+                                                                    "sebagian",
+                                                                    "lunas"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Petugas - Pelanggan"
+                ],
+                "summary": "Update data pelanggan",
+                "operationId": "1746ba1bbdfd6b76741539fb82945be7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID pelanggan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address",
+                                    "zone_id",
+                                    "tariff_rate_id"
+                                ],
+                                "properties": {
+                                    "customer_number": {
+                                        "type": "string",
+                                        "example": "PDAM-2026-0001",
+                                        "nullable": true
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Wayan Karya"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Banjar Kaja No. 12"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "082233445566",
+                                        "nullable": true
+                                    },
+                                    "zone_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tariff_rate_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "installation_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-24",
+                                        "nullable": true
+                                    },
+                                    "initial_meter": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 0,
+                                        "nullable": true
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": null,
+                                        "nullable": true
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Pelanggan berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pelanggan berhasil diperbarui."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CustomerDetail"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Petugas - Pelanggan"
+                ],
+                "summary": "Hapus pelanggan",
+                "description": "Soft delete — data pelanggan tidak dihapus permanen dari database.",
+                "operationId": "05d10654db3dfd0d85f1d010ee9b5e2e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID pelanggan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pelanggan berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pelanggan berhasil dihapus."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role tidak diizinkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
                                 }
                             }
                         }
@@ -1739,308 +2710,6 @@
                 ]
             }
         },
-        "/petugas/customers": {
-            "get": {
-                "tags": [
-                    "Petugas - Catat Meter"
-                ],
-                "summary": "Daftar pelanggan aktif",
-                "description": "Digunakan untuk mengisi dropdown pelanggan saat input meter.",
-                "operationId": "7beb832231a9d00d0677a407a90d206e",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "OK"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 5
-                                                    },
-                                                    "customer_number": {
-                                                        "type": "string",
-                                                        "example": "PLG-0005"
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "Wayan Karya"
-                                                    },
-                                                    "address": {
-                                                        "type": "string",
-                                                        "example": "Banjar Kaja No. 12"
-                                                    },
-                                                    "zone": {
-                                                        "type": "string",
-                                                        "example": "Zona A"
-                                                    },
-                                                    "tariff": {
-                                                        "type": "string",
-                                                        "example": "Tarif Rumah Tangga"
-                                                    },
-                                                    "initial_meter": {
-                                                        "type": "number",
-                                                        "format": "float",
-                                                        "example": 100
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "meta": {
-                                            "properties": {
-                                                "total": {
-                                                    "type": "integer",
-                                                    "example": 45
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UnauthorizedResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Role tidak diizinkan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ForbiddenResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/petugas/customers/{id}": {
-            "get": {
-                "tags": [
-                    "Petugas - Catat Meter"
-                ],
-                "summary": "Detail pelanggan",
-                "description": "Profil pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 periode terakhir sebelum pembacaan terakhir).",
-                "operationId": "e00a07dab18cb36e15e83a104b89c623",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID pelanggan",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "OK"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 5
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Andi Suartika"
-                                                },
-                                                "customer_number": {
-                                                    "type": "string",
-                                                    "example": "PLG-2024-001"
-                                                },
-                                                "zone": {
-                                                    "type": "string",
-                                                    "example": "Lingkungan Sangket"
-                                                },
-                                                "is_active": {
-                                                    "type": "boolean",
-                                                    "example": true
-                                                },
-                                                "registered_date": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2024-01-10"
-                                                },
-                                                "tariff_group": {
-                                                    "type": "string",
-                                                    "example": "Rumah Tangga"
-                                                },
-                                                "price_per_m3": {
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 8000
-                                                },
-                                                "minimum_usage": {
-                                                    "description": "Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh",
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 5
-                                                },
-                                                "minimum_charge": {
-                                                    "description": "Tagihan minimum walaupun pemakaian di bawah batas minimum",
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 15000
-                                                },
-                                                "last_reading": {
-                                                    "properties": {
-                                                        "current_reading": {
-                                                            "type": "number",
-                                                            "format": "float",
-                                                            "example": 145.5
-                                                        },
-                                                        "usage_m3": {
-                                                            "type": "number",
-                                                            "format": "float",
-                                                            "example": 12.4
-                                                        },
-                                                        "period_label": {
-                                                            "type": "string",
-                                                            "example": "Juni 2026"
-                                                        },
-                                                        "reading_date": {
-                                                            "type": "string",
-                                                            "format": "date",
-                                                            "example": "2025-06-14"
-                                                        },
-                                                        "payment_status": {
-                                                            "type": "string",
-                                                            "example": "lunas",
-                                                            "enum": [
-                                                                "belum_bayar",
-                                                                "sebagian",
-                                                                "lunas"
-                                                            ]
-                                                        }
-                                                    },
-                                                    "type": "object",
-                                                    "nullable": true
-                                                },
-                                                "billing_history": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "period_label": {
-                                                                "type": "string",
-                                                                "example": "Mei 2026"
-                                                            },
-                                                            "usage_m3": {
-                                                                "type": "number",
-                                                                "format": "float",
-                                                                "example": 27.4
-                                                            },
-                                                            "total_amount": {
-                                                                "type": "number",
-                                                                "format": "float",
-                                                                "example": 68500
-                                                            },
-                                                            "payment_status": {
-                                                                "type": "string",
-                                                                "example": "belum_bayar",
-                                                                "enum": [
-                                                                    "belum_bayar",
-                                                                    "sebagian",
-                                                                    "lunas"
-                                                                ]
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "example": null,
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UnauthorizedResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Role tidak diizinkan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ForbiddenResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tidak ditemukan",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "/petugas/water-readings": {
             "get": {
                 "tags": [
@@ -2725,6 +3394,74 @@
                 },
                 "type": "object"
             },
+            "CustomerDetail": {
+                "title": "Customer Detail",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "customer_number": {
+                        "type": "string",
+                        "example": "PDAM-2026-0001"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Wayan Karya"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "Banjar Kaja No. 12"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "082233445566",
+                        "nullable": true
+                    },
+                    "zone_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "zone": {
+                        "type": "string",
+                        "example": "Zona A"
+                    },
+                    "tariff_rate_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "tariff_name": {
+                        "type": "string",
+                        "example": "Tarif Rumah Tangga"
+                    },
+                    "installation_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-24",
+                        "nullable": true
+                    },
+                    "initial_meter": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "NotFoundResponse": {
                 "title": "Not Found Response",
                 "properties": {
@@ -2771,6 +3508,10 @@
         {
             "name": "Petugas - Catat Meter",
             "description": "Pencatatan meter air oleh petugas"
+        },
+        {
+            "name": "Petugas - Pelanggan",
+            "description": "CRUD data master pelanggan"
         },
         {
             "name": "Petugas - Pembayaran",

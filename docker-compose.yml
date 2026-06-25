@@ -17,6 +17,25 @@ services:
       redis:
         condition: service_started
 
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: toya_amerta_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work --tries=3 --backoff=10 --sleep=3
+    volumes:
+      - .:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - toya_network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
   webserver:
     image: nginx:alpine
     container_name: toya_amerta_nginx

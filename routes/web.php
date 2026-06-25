@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\WaterReadingImportController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TariffRateController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WhatsappTemplateController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -43,6 +44,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::post('zones',           [ZoneController::class, 'store'])->name('zones.store');
         Route::put('zones/{zone}',     [ZoneController::class, 'update'])->name('zones.update');
         Route::delete('zones/{zone}',  [ZoneController::class, 'destroy'])->name('zones.destroy');
+
+        // Template Pesan WhatsApp
+        Route::get('whatsapp-templates',   [WhatsappTemplateController::class, 'index'])->name('whatsapp-templates.index');
+        Route::put('whatsapp-templates',   [WhatsappTemplateController::class, 'update'])->name('whatsapp-templates.update');
 
         // Tarif Air
         Route::get('tariff-rates',                 [TariffRateController::class, 'index'])->name('tariff-rates.index');

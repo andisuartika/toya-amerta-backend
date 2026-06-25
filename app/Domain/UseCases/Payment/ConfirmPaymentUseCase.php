@@ -4,6 +4,7 @@ namespace App\Domain\UseCases\Payment;
 
 use App\Domain\Contracts\PaymentRepositoryInterface;
 use App\Domain\DTOs\Payment\PaymentDTO;
+use App\Jobs\SendKonfirmasiBayarNotification;
 use App\Models\PaymentRecord;
 use Illuminate\Validation\ValidationException;
 
@@ -36,6 +37,10 @@ class ConfirmPaymentUseCase
             ]);
         }
 
-        return $this->repo->create($dto, $recordedBy);
+        $payment = $this->repo->create($dto, $recordedBy);
+
+        SendKonfirmasiBayarNotification::dispatch($payment->id);
+
+        return $payment;
     }
 }

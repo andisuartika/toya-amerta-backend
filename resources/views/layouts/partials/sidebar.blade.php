@@ -76,6 +76,15 @@
                         <span>Kelola Pengguna</span>
                     </a>
                 </li>
+
+                <li>
+                    <a href="{{ route('admin.whatsapp-templates.index') }}">
+                        <span class="nav-icon">
+                            <iconify-icon icon="solar:chat-round-line-bold-duotone"></iconify-icon>
+                        </span>
+                        <span>Template Pesan WA</span>
+                    </a>
+                </li>
                 @endrole
 
                 <!-- ── TRANSAKSI ── -->

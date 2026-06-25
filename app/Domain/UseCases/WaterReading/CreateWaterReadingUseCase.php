@@ -4,6 +4,7 @@ namespace App\Domain\UseCases\WaterReading;
 
 use App\Domain\Contracts\WaterReadingRepositoryInterface;
 use App\Domain\DTOs\WaterReading\WaterReadingDTO;
+use App\Jobs\SendTagihanNotification;
 use App\Models\WaterReading;
 use Illuminate\Validation\ValidationException;
 
@@ -19,6 +20,10 @@ class CreateWaterReadingUseCase
             ]);
         }
 
-        return $this->repo->create($dto);
+        $reading = $this->repo->create($dto);
+
+        SendTagihanNotification::dispatch($reading->id);
+
+        return $reading;
     }
 }

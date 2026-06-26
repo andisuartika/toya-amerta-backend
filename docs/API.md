@@ -558,7 +558,7 @@ Digunakan untuk mengisi dropdown saat input meter, dan untuk daftar pelanggan de
 GET /api/petugas/customers/{id}
 ```
 
-Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 periode sebelum pembacaan terakhir). Digunakan saat petugas membuka detail seorang pelanggan.
+Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (3 periode sebelum pembacaan terakhir). Digunakan saat petugas membuka detail seorang pelanggan. Untuk riwayat lengkap (semua periode), gunakan [3.3b](#33b-riwayat-pemakaian-lengkap-pelanggan).
 
 **Path Parameter**
 
@@ -576,8 +576,13 @@ Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 perio
     "id": 5,
     "name": "Andi Suartika",
     "customer_number": "PLG-2024-001",
+    "address": "Banjar Kaja No. 12",
+    "phone": "082233445566",
+    "zone_id": 1,
     "zone": "Lingkungan Sangket",
+    "tariff_rate_id": 1,
     "is_active": true,
+    "initial_meter": 28,
     "registered_date": "2024-01-10",
     "tariff_group": "Rumah Tangga",
     "price_per_m3": 8000,
@@ -612,11 +617,61 @@ Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 perio
 | Field             | Keterangan                                                                                                                                                                                                                              |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `registered_date` | Tanggal pemasangan/instalasi pelanggan                                                                                                                                                                                                  |
+| `initial_meter`   | Stand meter awal saat pelanggan didaftarkan. **Pakai ini sebagai `previous_reading` kalau `last_reading` bernilai `null`** (pelanggan belum pernah dicatat) — jangan pakai `0`, supaya pemakaian tidak salah hitung jadi sangat besar   |
 | `tariff_group`    | Nama golongan tarif pelanggan                                                                                                                                                                                                           |
 | `minimum_usage`   | Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh                                                                                                                                                                           |
 | `minimum_charge`  | Tagihan minimum walaupun pemakaian di bawah `minimum_usage`. Gunakan field ini bersama `price_per_m3` & `minimum_usage` untuk menghitung estimasi tagihan di Flutter sebelum submit, supaya hasilnya konsisten dengan kalkulasi backend |
 | `last_reading`    | Pembacaan meter paling baru. `null` jika belum pernah dicatat sama sekali                                                                                                                                                               |
-| `billing_history` | Maksimal 5 periode tagihan sebelum `last_reading`, urut dari terbaru                                                                                                                                                                    |
+| `billing_history` | Maksimal 3 periode tagihan sebelum `last_reading`, urut dari terbaru. Untuk riwayat lengkap, lihat [3.3b](#33b-riwayat-pemakaian-lengkap-pelanggan)                                                                                     |
+
+**Response 404 — Pelanggan tidak ditemukan**
+
+```json
+{
+  "success": false,
+  "message": "Data tidak ditemukan.",
+  "data": null,
+  "meta": null
+}
+```
+
+---
+
+### 3.3b Riwayat Pemakaian Lengkap Pelanggan
+
+```
+GET /api/petugas/customers/{id}/readings
+```
+
+Seluruh riwayat pembacaan meter pelanggan (semua periode, **tidak dibatasi 5** seperti `billing_history` di [3.3](#33-detail-pelanggan)), diurutkan dari periode terbaru. Dipakai untuk halaman "Lihat semua riwayat" di detail pelanggan.
+
+**Path Parameter**
+
+| Parameter | Tipe    | Keterangan   |
+| --------- | ------- | ------------ |
+| `id`      | integer | ID pelanggan |
+
+**Response 200**
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": [
+    {
+      "id": 55,
+      "period_label": "Juni 2026",
+      "reading_date": "2026-06-03",
+      "previous_reading": 132.8,
+      "current_reading": 145.2,
+      "usage_m3": 12.4,
+      "total_amount": 31000,
+      "payment_status": "lunas"
+    }
+  ],
+  "meta": { "total": 18 }
+}
+```
 
 **Response 404 — Pelanggan tidak ditemukan**
 

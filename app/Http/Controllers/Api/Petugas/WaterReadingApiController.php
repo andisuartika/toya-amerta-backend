@@ -111,7 +111,7 @@ class WaterReadingApiController extends Controller
     #[OA\Get(
         path: '/petugas/customers/{id}',
         summary: 'Detail pelanggan',
-        description: 'Profil pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 periode terakhir sebelum pembacaan terakhir).',
+        description: 'Profil pelanggan, pembacaan meter terakhir, dan riwayat tagihan (3 periode terakhir sebelum pembacaan terakhir).',
         security: [['sanctum' => []]],
         tags: ['Petugas - Catat Meter'],
         parameters: [
@@ -131,8 +131,13 @@ class WaterReadingApiController extends Controller
                                 new OA\Property(property: 'id', type: 'integer', example: 5),
                                 new OA\Property(property: 'name', type: 'string', example: 'Andi Suartika'),
                                 new OA\Property(property: 'customer_number', type: 'string', example: 'PLG-2024-001'),
+                                new OA\Property(property: 'address', type: 'string', example: 'Banjar Kaja No. 12'),
+                                new OA\Property(property: 'phone', type: 'string', nullable: true, example: '082233445566'),
+                                new OA\Property(property: 'zone_id', type: 'integer', example: 1),
                                 new OA\Property(property: 'zone', type: 'string', example: 'Lingkungan Sangket'),
+                                new OA\Property(property: 'tariff_rate_id', type: 'integer', example: 1),
                                 new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                                new OA\Property(property: 'initial_meter', type: 'number', format: 'float', example: 28, description: 'Stand meter awal saat pelanggan didaftarkan. Gunakan ini sebagai previous_reading kalau last_reading null (belum pernah dicatat)'),
                                 new OA\Property(property: 'registered_date', type: 'string', format: 'date', example: '2024-01-10'),
                                 new OA\Property(property: 'tariff_group', type: 'string', example: 'Rumah Tangga'),
                                 new OA\Property(property: 'price_per_m3', type: 'number', format: 'float', example: 8000),
@@ -181,11 +186,11 @@ class WaterReadingApiController extends Controller
         $readings = WaterReading::where('customer_id', $customer->id)
             ->orderByDesc('period_year')
             ->orderByDesc('period_month')
-            ->limit(6)
+            ->limit(4)
             ->get();
 
         $last    = $readings->first();
-        $history = $readings->slice(1, 5);
+        $history = $readings->slice(1, 3);
 
         return response()->json([
             'success' => true,
@@ -194,8 +199,13 @@ class WaterReadingApiController extends Controller
                 'id'               => $customer->id,
                 'name'             => $customer->name,
                 'customer_number'  => $customer->customer_number,
+                'address'          => $customer->address,
+                'phone'            => $customer->phone,
+                'zone_id'          => $customer->zone_id,
                 'zone'             => $customer->zone?->name,
+                'tariff_rate_id'   => $customer->tariff_rate_id,
                 'is_active'        => $customer->is_active,
+                'initial_meter'    => $customer->initial_meter,
                 'registered_date'  => $customer->installation_date?->format('Y-m-d'),
                 'tariff_group'     => $customer->tariffRate?->name,
                 'price_per_m3'     => $customer->tariffRate?->price_per_m3,
@@ -216,6 +226,79 @@ class WaterReadingApiController extends Controller
                 ])->values(),
             ],
             'meta' => null,
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/petugas/customers/{id}/readings',
+        summary: 'Riwayat pemakaian lengkap pelanggan',
+        description: 'Seluruh riwayat pembacaan meter pelanggan (semua periode, bukan dibatasi 5 seperti di detail pelanggan), diurutkan dari periode terbaru.',
+        security: [['sanctum' => []]],
+        tags: ['Petugas - Catat Meter'],
+        parameters: [
+            new OA\Parameter(name: 'id', description: 'ID pelanggan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'OK',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'OK'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 55),
+                                    new OA\Property(property: 'period_label', type: 'string', example: 'Juni 2026'),
+                                    new OA\Property(property: 'reading_date', type: 'string', format: 'date', example: '2026-06-03'),
+                                    new OA\Property(property: 'previous_reading', type: 'number', format: 'float', example: 132.8),
+                                    new OA\Property(property: 'current_reading', type: 'number', format: 'float', example: 145.2),
+                                    new OA\Property(property: 'usage_m3', type: 'number', format: 'float', example: 12.4),
+                                    new OA\Property(property: 'total_amount', type: 'number', format: 'float', example: 31000),
+                                    new OA\Property(property: 'payment_status', type: 'string', enum: ['belum_bayar', 'sebagian', 'lunas'], example: 'lunas'),
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'meta',
+                            properties: [new OA\Property(property: 'total', type: 'integer', example: 18)],
+                            type: 'object'
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated', content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')),
+            new OA\Response(response: 403, description: 'Role tidak diizinkan', content: new OA\JsonContent(ref: '#/components/schemas/ForbiddenResponse')),
+            new OA\Response(response: 404, description: 'Pelanggan tidak ditemukan', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundResponse')),
+        ]
+    )]
+    public function customerReadings(int $id): JsonResponse
+    {
+        $customer = Customer::findOrFail($id);
+
+        $readings = WaterReading::where('customer_id', $customer->id)
+            ->orderByDesc('period_year')
+            ->orderByDesc('period_month')
+            ->get()
+            ->map(fn (WaterReading $r) => [
+                'id'               => $r->id,
+                'period_label'     => $r->period_label,
+                'reading_date'     => $r->reading_date?->format('Y-m-d'),
+                'previous_reading' => $r->previous_reading,
+                'current_reading'  => $r->current_reading,
+                'usage_m3'         => round($r->current_reading - $r->previous_reading, 2),
+                'total_amount'     => $r->total_amount,
+                'payment_status'   => $r->payment_status,
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OK',
+            'data'    => $readings->values(),
+            'meta'    => ['total' => $readings->count()],
         ]);
     }
 

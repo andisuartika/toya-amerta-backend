@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\MaintenanceController;
+use App\Http\Controllers\Admin\MasterMeterReadingController;
 use App\Http\Controllers\Admin\CashTransactionController;
 use App\Http\Controllers\Admin\FinancialReportController;
 use App\Http\Controllers\Admin\WaterUsageReportController;
@@ -115,6 +116,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::get('water-usage-report',       [WaterUsageReportController::class, 'index'])->name('water-usage-report.index');
         Route::get('water-usage-report/excel', [WaterUsageReportController::class, 'downloadExcel'])->name('water-usage-report.excel');
         Route::get('water-usage-report/pdf',   [WaterUsageReportController::class, 'downloadPdf'])->name('water-usage-report.pdf');
+
+        // Meteran Induk
+        Route::get('master-meter-readings',                       [MasterMeterReadingController::class, 'index'])->name('master-meter-readings.index');
+        Route::post('master-meter-readings',                      [MasterMeterReadingController::class, 'store'])->name('master-meter-readings.store');
+        Route::delete('master-meter-readings/{masterMeterReading}', [MasterMeterReadingController::class, 'destroy'])->name('master-meter-readings.destroy');
 
         // Tagihan PDAM Pusat
         Route::get('pdam-bills',                         [PdamBillController::class, 'index'])->name('pdam-bills.index');

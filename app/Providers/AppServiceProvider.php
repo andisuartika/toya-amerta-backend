@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Domain\Contracts\CustomerRepositoryInterface;
+use App\Domain\Contracts\MasterMeterReadingRepositoryInterface;
 use App\Domain\Contracts\TariffRateRepositoryInterface;
 use App\Domain\Contracts\UserRepositoryInterface;
 use App\Domain\Contracts\MaintenanceRepositoryInterface;
@@ -11,6 +12,7 @@ use App\Domain\Contracts\WaterReadingRepositoryInterface;
 use App\Domain\Contracts\ZoneRepositoryInterface;
 use App\Infrastructure\Repositories\CustomerRepository;
 use App\Infrastructure\Repositories\MaintenanceRepository;
+use App\Infrastructure\Repositories\MasterMeterReadingRepository;
 use App\Infrastructure\Repositories\TariffRateRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use App\Infrastructure\Repositories\PaymentRepository;
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(WaterReadingRepositoryInterface::class,  WaterReadingRepository::class);
         $this->app->bind(PaymentRepositoryInterface::class,       PaymentRepository::class);
         $this->app->bind(MaintenanceRepositoryInterface::class,   MaintenanceRepository::class);
+        $this->app->bind(MasterMeterReadingRepositoryInterface::class, MasterMeterReadingRepository::class);
     }
 
     public function boot(): void

@@ -48,6 +48,7 @@ Route::middleware(['auth:sanctum', 'role:petugas|admin'])
         Route::get('customers/form-options', [CustomerApiController::class, 'formOptions']);
 
         Route::get('customers/{id}', [WaterReadingApiController::class, 'customerDetail']);
+        Route::get('customers/{id}/readings', [WaterReadingApiController::class, 'customerReadings']);
 
         // CRUD data master pelanggan
         Route::post('customers', [CustomerApiController::class, 'store']);

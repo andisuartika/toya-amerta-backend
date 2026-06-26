@@ -172,13 +172,22 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="{{ route('admin.master-meter-readings.index') }}" class="{{ request()->routeIs('admin.master-meter-readings.*') ? 'active' : '' }}">
+                        <span class="nav-icon">
+                            <iconify-icon icon="solar:spedometer-middle-bold-duotone"></iconify-icon>
+                        </span>
+                        <span>Meteran Induk</span>
+                    </a>
+                </li>
+
                 <!-- ── LAPORAN ── -->
                 <li class="menu-title mt-2">Laporan</li>
 
                 <li>
                     <a href="{{ route('admin.water-usage-report.index') }}" class="{{ request()->routeIs('admin.water-usage-report.*') ? 'active' : '' }}">
                         <span class="nav-icon">
-                            <iconify-icon icon="solar:drop-bold-duotone"></iconify-icon>
+                            <iconify-icon icon="solar:waterdrops-bold-duotone"></iconify-icon>
                         </span>
                         <span>Laporan Penggunaan Air</span>
                     </a>

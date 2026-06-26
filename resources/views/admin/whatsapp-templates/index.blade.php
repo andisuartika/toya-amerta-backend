@@ -33,10 +33,13 @@
                         <div class="mt-3">
                             <p class="fw-medium fs-13 mb-1">Placeholder yang bisa dipakai:</p>
                             <div class="d-flex flex-wrap gap-1">
-                                @foreach (['{nama}', '{no_pelanggan}', '{periode}', '{meter_lalu}', '{meter_ini}', '{pemakaian}', '{harga_m3}', '{total}'] as $ph)
+                                @foreach (['{nama}', '{no_pelanggan}', '{periode}', '{meter_lalu}', '{meter_ini}', '{pemakaian}', '{harga_m3}', '{total}', '{link}'] as $ph)
                                     <code class="badge bg-secondary-subtle text-secondary-emphasis fw-normal placeholder-chip" style="cursor:pointer" data-target="templateTagihan" data-ph="{{ $ph }}">{{ $ph }}</code>
                                 @endforeach
                             </div>
+                            <p class="text-muted fs-12 mt-2 mb-0">
+                                <code>{link}</code> otomatis terisi link halaman cek tagihan publik (tanpa login) untuk periode ini.
+                            </p>
                         </div>
 
                         <button type="submit" class="btn btn-primary px-4 mt-3">Simpan Template Tagihan</button>
@@ -69,13 +72,14 @@
                         <div class="mt-3">
                             <p class="fw-medium fs-13 mb-1">Placeholder yang bisa dipakai:</p>
                             <div class="d-flex flex-wrap gap-1">
-                                @foreach (['{nama}', '{no_kwitansi}', '{periode}', '{jumlah_bayar}', '{status}', '{sisa_block}'] as $ph)
+                                @foreach (['{nama}', '{no_kwitansi}', '{periode}', '{jumlah_bayar}', '{status}', '{sisa_block}', '{link}'] as $ph)
                                     <code class="badge bg-secondary-subtle text-secondary-emphasis fw-normal placeholder-chip" style="cursor:pointer" data-target="templateKonfirmasi" data-ph="{{ $ph }}">{{ $ph }}</code>
                                 @endforeach
                             </div>
                             <p class="text-muted fs-12 mt-2 mb-0">
                                 <code>{sisa_block}</code> otomatis terisi baris "Sisa Tagihan: Rp ..." jika pembayaran sebagian,
-                                dan kosong jika sudah lunas.
+                                dan kosong jika sudah lunas.<br>
+                                <code>{link}</code> otomatis terisi link halaman cek tagihan publik (tanpa login) untuk periode ini.
                             </p>
                         </div>
 

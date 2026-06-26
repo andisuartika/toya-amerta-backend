@@ -22,7 +22,9 @@ class CreateWaterReadingUseCase
 
         $reading = $this->repo->create($dto);
 
-        SendTagihanNotification::dispatch($reading->id);
+        if ($dto->send_whatsapp) {
+            SendTagihanNotification::dispatch($reading->id);
+        }
 
         return $reading;
     }

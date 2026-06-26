@@ -24,6 +24,7 @@ class SendTagihanNotification implements ShouldQueue
         . "Pemakaian: {pemakaian} m³\n"
         . "Harga/m³: Rp {harga_m3}\n\n"
         . "TOTAL: Rp {total}\n\n"
+        . "Cek detail & riwayat: {link}\n\n"
         . 'Mohon segera melakukan pembayaran. Terima kasih 🙏';
 
     public function __construct(private int $waterReadingId) {}
@@ -38,11 +39,12 @@ class SendTagihanNotification implements ShouldQueue
         }
 
         $usage = $reading->current_reading - $reading->previous_reading;
+        $link  = route('public.cek.detail', [$customer->customer_number, $reading->id]);
 
         $template = WhatsappTemplate::where('type', 'tagihan')->value('template') ?: self::DEFAULT_TEMPLATE;
 
         $message = str_replace(
-            ['{nama}', '{no_pelanggan}', '{periode}', '{meter_lalu}', '{meter_ini}', '{pemakaian}', '{harga_m3}', '{total}'],
+            ['{nama}', '{no_pelanggan}', '{periode}', '{meter_lalu}', '{meter_ini}', '{pemakaian}', '{harga_m3}', '{total}', '{link}'],
             [
                 $customer->name,
                 $customer->customer_number,
@@ -52,6 +54,7 @@ class SendTagihanNotification implements ShouldQueue
                 number_format($usage, 1),
                 number_format($reading->price_per_m3, 0, ',', '.'),
                 number_format($reading->total_amount, 0, ',', '.'),
+                $link,
             ],
             $template,
         );

@@ -22,10 +22,20 @@ class WaterReadingApiController extends Controller
 
     #[OA\Get(
         path: '/petugas/customers',
-        summary: 'Daftar pelanggan aktif',
-        description: 'Digunakan untuk mengisi dropdown pelanggan saat input meter.',
+        summary: 'Daftar pelanggan',
+        description: 'Digunakan untuk mengisi dropdown pelanggan saat input meter. ' .
+            'Tanpa parameter `is_active`, hanya pelanggan aktif yang dikembalikan (perilaku default/lama).',
         security: [['sanctum' => []]],
         tags: ['Petugas - Catat Meter'],
+        parameters: [
+            new OA\Parameter(
+                name: 'is_active',
+                description: 'Filter status pelanggan: `true` (aktif), `false` (nonaktif), atau dikosongkan untuk semua dianggap aktif saja',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'boolean', example: true)
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
@@ -43,9 +53,13 @@ class WaterReadingApiController extends Controller
                                     new OA\Property(property: 'customer_number', type: 'string', example: 'PLG-0005'),
                                     new OA\Property(property: 'name', type: 'string', example: 'Wayan Karya'),
                                     new OA\Property(property: 'address', type: 'string', example: 'Banjar Kaja No. 12'),
+                                    new OA\Property(property: 'phone', type: 'string', nullable: true, example: '082233445566'),
+                                    new OA\Property(property: 'zone_id', type: 'integer', nullable: true, example: 1),
                                     new OA\Property(property: 'zone', type: 'string', example: 'Zona A'),
+                                    new OA\Property(property: 'tariff_rate_id', type: 'integer', nullable: true, example: 1),
                                     new OA\Property(property: 'tariff', type: 'string', example: 'Tarif Rumah Tangga'),
                                     new OA\Property(property: 'initial_meter', type: 'number', format: 'float', example: 100),
+                                    new OA\Property(property: 'is_active', type: 'boolean', example: true),
                                 ]
                             )
                         ),
@@ -61,20 +75,29 @@ class WaterReadingApiController extends Controller
             new OA\Response(response: 403, description: 'Role tidak diizinkan', content: new OA\JsonContent(ref: '#/components/schemas/ForbiddenResponse')),
         ]
     )]
-    public function customers(): JsonResponse
+    public function customers(Request $request): JsonResponse
     {
-        $customers = Customer::with(['zone', 'tariffRate'])
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get()
+        $query = Customer::with(['zone', 'tariffRate'])->orderBy('name');
+
+        if ($request->has('is_active')) {
+            $query->where('is_active', $request->boolean('is_active'));
+        } else {
+            $query->where('is_active', true);
+        }
+
+        $customers = $query->get()
             ->map(fn (Customer $c) => [
                 'id'              => $c->id,
                 'customer_number' => $c->customer_number,
                 'name'            => $c->name,
                 'address'         => $c->address,
+                'phone'           => $c->phone,
+                'zone_id'         => $c->zone_id,
                 'zone'            => $c->zone?->name,
+                'tariff_rate_id'  => $c->tariff_rate_id,
                 'tariff'          => $c->tariffRate?->name,
                 'initial_meter'   => $c->initial_meter,
+                'is_active'       => $c->is_active,
             ]);
 
         return response()->json([
@@ -272,6 +295,7 @@ class WaterReadingApiController extends Controller
                         new OA\Property(property: 'reading_date', type: 'string', format: 'date', example: '2026-06-03'),
                         new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Meteran normal'),
                         new OA\Property(property: 'photo', description: 'Foto meter (jpg/png/webp, maks 5MB)', type: 'string', format: 'binary', nullable: true),
+                        new OA\Property(property: 'send_whatsapp', description: 'Kirim notifikasi tagihan via WhatsApp setelah berhasil dicatat. Default true.', type: 'boolean', nullable: true, example: true),
                     ]
                 )
             )
@@ -304,6 +328,7 @@ class WaterReadingApiController extends Controller
             'reading_date'    => 'required|date',
             'notes'           => 'nullable|string|max:500',
             'photo'           => 'nullable|image|max:5120',
+            'send_whatsapp'   => 'nullable|boolean',
         ]);
 
         $photoUrl = null;
@@ -313,8 +338,9 @@ class WaterReadingApiController extends Controller
         }
 
         $dto = WaterReadingDTO::fromArray(array_merge($validated, [
-            'officer_id' => $request->user()->id,
-            'photo_url'  => $photoUrl,
+            'officer_id'    => $request->user()->id,
+            'photo_url'     => $photoUrl,
+            'send_whatsapp' => $request->boolean('send_whatsapp', true),
         ]));
 
         $reading = $this->createUseCase->execute($dto);

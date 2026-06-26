@@ -6,13 +6,13 @@ Dokumen ini menjelaskan seluruh endpoint API yang dapat dikonsumsi oleh aplikasi
 
 ## Informasi Umum
 
-| Item | Keterangan |
-|------|-----------|
-| Base URL | `https://your-domain.com/api` |
-| Auth | Bearer Token (Laravel Sanctum) |
-| Format Request | `application/json` |
-| Format Response | `application/json` |
-| Token Expire | 30 hari sejak login |
+| Item            | Keterangan                     |
+| --------------- | ------------------------------ |
+| Base URL        | `https://your-domain.com/api`  |
+| Auth            | Bearer Token (Laravel Sanctum) |
+| Format Request  | `application/json`             |
+| Format Response | `application/json`             |
+| Token Expire    | 30 hari sejak login            |
 
 ### Struktur Response
 
@@ -23,28 +23,29 @@ Semua response menggunakan envelope yang konsisten:
   "success": true,
   "message": "Keterangan singkat",
   "data": { ... },
-  "meta": { ... }
+  "meta": { ... } 
 }
 ```
 
-| Field | Tipe | Keterangan |
-|-------|------|-----------|
-| `success` | boolean | `true` jika request berhasil |
-| `message` | string | Pesan ringkas untuk ditampilkan |
-| `data` | object \| array \| null | Payload utama |
-| `meta` | object \| null | Informasi tambahan (total, pagination, filter aktif) |
+| Field     | Tipe                    | Keterangan                                           |
+| --------- | ----------------------- | ---------------------------------------------------- |
+| `success` | boolean                 | `true` jika request berhasil                         |
+| `message` | string                  | Pesan ringkas untuk ditampilkan                      |
+| `data`    | object \| array \| null | Payload utama                                        |
+| `meta`    | object \| null          | Informasi tambahan (total, pagination, filter aktif) |
 
 ### Error Response
 
-| HTTP Status | Kondisi |
-|-------------|---------|
-| 401 | Token tidak ada, tidak valid, atau sudah kedaluwarsa |
-| 403 | Role tidak memiliki akses ke endpoint ini |
-| 404 | Data tidak ditemukan |
-| 422 | Validasi input gagal — `data` berisi detail error per field |
-| 500 | Kesalahan internal server |
+| HTTP Status | Kondisi                                                     |
+| ----------- | ----------------------------------------------------------- |
+| 401         | Token tidak ada, tidak valid, atau sudah kedaluwarsa        |
+| 403         | Role tidak memiliki akses ke endpoint ini                   |
+| 404         | Data tidak ditemukan                                        |
+| 422         | Validasi input gagal — `data` berisi detail error per field |
+| 500         | Kesalahan internal server                                   |
 
 Contoh error 422:
+
 ```json
 {
   "success": false,
@@ -60,11 +61,11 @@ Contoh error 422:
 
 ## Role Pengguna
 
-| Role | Deskripsi |
-|------|-----------|
+| Role        | Deskripsi                                                    |
+| ----------- | ------------------------------------------------------------ |
 | `pelanggan` | Hanya bisa melihat tagihan & riwayat pemakaian milik sendiri |
-| `petugas` | Input meter, konfirmasi bayar, laporan maintenance |
-| `admin` | Akses penuh (termasuk semua endpoint petugas) |
+| `petugas`   | Input meter, konfirmasi bayar, laporan maintenance           |
+| `admin`     | Akses penuh (termasuk semua endpoint petugas)                |
 
 ---
 
@@ -87,10 +88,10 @@ Tidak memerlukan token. Mengembalikan Bearer token untuk request berikutnya.
 }
 ```
 
-| Field | Tipe | Wajib | Keterangan |
-|-------|------|-------|-----------|
-| `email` | string | Ya | Email terdaftar |
-| `password` | string | Ya | Password akun |
+| Field      | Tipe   | Wajib | Keterangan      |
+| ---------- | ------ | ----- | --------------- |
+| `email`    | string | Ya    | Email terdaftar |
+| `password` | string | Ya    | Password akun   |
 
 **Response 200 — Berhasil**
 
@@ -221,15 +222,15 @@ Semua field opsional — kirim hanya field yang ingin diubah.
 }
 ```
 
-| Field | Tipe | Wajib | Keterangan |
-|-------|------|-------|-----------|
-| `name` | string | Tidak | Nama pengguna |
-| `phone` | string | Tidak | No. telepon |
-| `email` | string | Tidak | Harus unik (dicek terhadap user lain) |
-| `photo` | file (jpg/png/webp) | Tidak | Foto profil, maksimal 2MB |
-| `current_password` | string | **Wajib jika mengganti password** | Password saat ini, untuk verifikasi |
-| `password` | string | Tidak | Password baru, minimal 6 karakter |
-| `password_confirmation` | string | **Wajib jika mengisi `password`** | Harus sama dengan `password` |
+| Field                   | Tipe                | Wajib                             | Keterangan                            |
+| ----------------------- | ------------------- | --------------------------------- | ------------------------------------- |
+| `name`                  | string              | Tidak                             | Nama pengguna                         |
+| `phone`                 | string              | Tidak                             | No. telepon                           |
+| `email`                 | string              | Tidak                             | Harus unik (dicek terhadap user lain) |
+| `photo`                 | file (jpg/png/webp) | Tidak                             | Foto profil, maksimal 2MB             |
+| `current_password`      | string              | **Wajib jika mengganti password** | Password saat ini, untuk verifikasi   |
+| `password`              | string              | Tidak                             | Password baru, minimal 6 karakter     |
+| `password_confirmation` | string              | **Wajib jika mengisi `password`** | Harus sama dengan `password`          |
 
 **Response 200 — Berhasil**
 
@@ -311,9 +312,9 @@ GET /api/pelanggan/profile
     "phone": "082233445566",
     "zone": "Zona A",
     "tariff_name": "Tarif Rumah Tangga",
-    "price_per_m3": 2500.00,
-    "minimum_charge": 15000.00,
-    "minimum_usage": 5.00,
+    "price_per_m3": 2500.0,
+    "minimum_charge": 15000.0,
+    "minimum_usage": 5.0,
     "installation_date": "2022-03-15",
     "is_active": true
   },
@@ -344,12 +345,12 @@ Mengembalikan semua tagihan dengan status `belum_bayar` atau `sebagian` milik pe
       "period_month": 5,
       "period_label": "Mei 2026",
       "reading_date": "2026-05-03",
-      "previous_reading": 120.50,
-      "current_reading": 132.80,
-      "usage_m3": 12.30,
-      "total_amount": 30750.00,
-      "amount_paid": 0.00,
-      "remaining_amount": 30750.00,
+      "previous_reading": 120.5,
+      "current_reading": 132.8,
+      "usage_m3": 12.3,
+      "total_amount": 30750.0,
+      "amount_paid": 0.0,
+      "remaining_amount": 30750.0,
       "payment_status": "belum_bayar"
     }
   ],
@@ -359,9 +360,9 @@ Mengembalikan semua tagihan dengan status `belum_bayar` atau `sebagian` milik pe
 }
 ```
 
-| Field | Keterangan |
-|-------|-----------|
-| `payment_status` | `belum_bayar` \| `sebagian` |
+| Field              | Keterangan                      |
+| ------------------ | ------------------------------- |
+| `payment_status`   | `belum_bayar` \| `sebagian`     |
 | `remaining_amount` | Sisa tagihan yang belum dibayar |
 
 ---
@@ -374,9 +375,9 @@ GET /api/pelanggan/riwayat?limit=12
 
 **Query Parameter**
 
-| Parameter | Tipe | Default | Keterangan |
-|-----------|------|---------|-----------|
-| `limit` | integer | `12` | Jumlah data diambil, maksimal `24` |
+| Parameter | Tipe    | Default | Keterangan                         |
+| --------- | ------- | ------- | ---------------------------------- |
+| `limit`   | integer | `12`    | Jumlah data diambil, maksimal `24` |
 
 **Response 200**
 
@@ -391,11 +392,11 @@ GET /api/pelanggan/riwayat?limit=12
       "period_month": 5,
       "period_label": "Mei 2026",
       "reading_date": "2026-05-03",
-      "previous_reading": 120.50,
-      "current_reading": 132.80,
-      "usage_m3": 12.30,
-      "total_amount": 30750.00,
-      "amount_paid": 30750.00,
+      "previous_reading": 120.5,
+      "current_reading": 132.8,
+      "usage_m3": 12.3,
+      "total_amount": 30750.0,
+      "amount_paid": 30750.0,
       "payment_status": "lunas"
     },
     {
@@ -404,11 +405,11 @@ GET /api/pelanggan/riwayat?limit=12
       "period_month": 4,
       "period_label": "April 2026",
       "reading_date": "2026-04-04",
-      "previous_reading": 109.20,
-      "current_reading": 120.50,
-      "usage_m3": 11.30,
-      "total_amount": 28250.00,
-      "amount_paid": 28250.00,
+      "previous_reading": 109.2,
+      "current_reading": 120.5,
+      "usage_m3": 11.3,
+      "total_amount": 28250.0,
+      "amount_paid": 28250.0,
       "payment_status": "lunas"
     }
   ],
@@ -419,11 +420,11 @@ GET /api/pelanggan/riwayat?limit=12
 }
 ```
 
-| `payment_status` | Keterangan |
-|-----------------|-----------|
-| `belum_bayar` | Belum ada pembayaran |
-| `sebagian` | Sudah bayar sebagian |
-| `lunas` | Tagihan lunas |
+| `payment_status` | Keterangan           |
+| ---------------- | -------------------- |
+| `belum_bayar`    | Belum ada pembayaran |
+| `sebagian`       | Sudah bayar sebagian |
+| `lunas`          | Tagihan lunas        |
 
 ---
 
@@ -443,10 +444,10 @@ Mengembalikan statistik ringkas untuk halaman dashboard petugas: jumlah pelangga
 
 **Query Parameter**
 
-| Parameter | Tipe | Default | Keterangan |
-|-----------|------|---------|-----------|
-| `year` | integer | tahun sekarang | Periode tahun yang dihitung |
-| `month` | integer | bulan sekarang | Periode bulan yang dihitung (1–12) |
+| Parameter | Tipe    | Default        | Keterangan                         |
+| --------- | ------- | -------------- | ---------------------------------- |
+| `year`    | integer | tahun sekarang | Periode tahun yang dihitung        |
+| `month`   | integer | bulan sekarang | Periode bulan yang dihitung (1–12) |
 
 **Response 200**
 
@@ -494,25 +495,33 @@ Mengembalikan statistik ringkas untuk halaman dashboard petugas: jumlah pelangga
 }
 ```
 
-| Field | Keterangan |
-|-------|-----------|
-| `active_customers` | Total pelanggan dengan status aktif |
-| `recorded_count` | Jumlah pelanggan yang sudah dicatat meternya pada periode ini |
-| `not_recorded_count` | Jumlah pelanggan aktif yang **belum** dicatat pada periode ini |
-| `unpaid_count` | Jumlah tagihan periode ini dengan status `belum_bayar` atau `sebagian` |
-| `total_collected` | Total nominal pembayaran yang masuk pada bulan ini (berdasarkan `payment_date`, bukan periode tagihan) |
-| `history` | Daftar gabungan pelanggan sudah & belum dicatat. Gunakan field `recorded` (`true`/`false`) untuk memisahkan ke tab "Sudah Dicatat" / "Belum Dicatat" di UI |
-| `history[].payment_status` | `belum_bayar`, `sebagian`, `lunas`, atau `belum_dicatat` (khusus item yang belum dicatat) |
+| Field                      | Keterangan                                                                                                                                                 |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `active_customers`         | Total pelanggan dengan status aktif                                                                                                                        |
+| `recorded_count`           | Jumlah pelanggan yang sudah dicatat meternya pada periode ini                                                                                              |
+| `not_recorded_count`       | Jumlah pelanggan aktif yang **belum** dicatat pada periode ini                                                                                             |
+| `unpaid_count`             | Jumlah tagihan periode ini dengan status `belum_bayar` atau `sebagian`                                                                                     |
+| `total_collected`          | Total nominal pembayaran yang masuk pada bulan ini (berdasarkan `payment_date`, bukan periode tagihan)                                                     |
+| `history`                  | Daftar gabungan pelanggan sudah & belum dicatat. Gunakan field `recorded` (`true`/`false`) untuk memisahkan ke tab "Sudah Dicatat" / "Belum Dicatat" di UI |
+| `history[].payment_status` | `belum_bayar`, `sebagian`, `lunas`, atau `belum_dicatat` (khusus item yang belum dicatat)                                                                  |
 
 ---
 
-### 3.2 Daftar Pelanggan Aktif
+### 3.2 Daftar Pelanggan
 
 ```
 GET /api/petugas/customers
+GET /api/petugas/customers?is_active=true
+GET /api/petugas/customers?is_active=false
 ```
 
-Digunakan untuk mengisi dropdown saat input meter.
+Digunakan untuk mengisi dropdown saat input meter, dan untuk daftar pelanggan dengan filter status.
+
+**Query Parameter**
+
+| Parameter   | Tipe    | Default | Keterangan                                                                                                                                                                 |
+| ----------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `is_active` | boolean | —       | `true` → hanya pelanggan aktif, `false` → hanya pelanggan nonaktif. Jika parameter ini **tidak dikirim**, API akan mengembalikan hanya pelanggan aktif (perilaku default). |
 
 **Response 200**
 
@@ -526,9 +535,13 @@ Digunakan untuk mengisi dropdown saat input meter.
       "customer_number": "PLG-0005",
       "name": "Wayan Karya",
       "address": "Banjar Kaja No. 12",
+      "phone": "082233445566",
+      "zone_id": 1,
       "zone": "Zona A",
+      "tariff_rate_id": 1,
       "tariff": "Tarif Rumah Tangga",
-      "initial_meter": 100.00
+      "initial_meter": 100.0,
+      "is_active": true
     }
   ],
   "meta": {
@@ -549,9 +562,9 @@ Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 perio
 
 **Path Parameter**
 
-| Parameter | Tipe | Keterangan |
-|-----------|------|-----------|
-| `id` | integer | ID pelanggan |
+| Parameter | Tipe    | Keterangan   |
+| --------- | ------- | ------------ |
+| `id`      | integer | ID pelanggan |
 
 **Response 200**
 
@@ -596,14 +609,14 @@ Profil lengkap pelanggan, pembacaan meter terakhir, dan riwayat tagihan (5 perio
 }
 ```
 
-| Field | Keterangan |
-|-------|-----------|
-| `registered_date` | Tanggal pemasangan/instalasi pelanggan |
-| `tariff_group` | Nama golongan tarif pelanggan |
-| `minimum_usage` | Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh |
-| `minimum_charge` | Tagihan minimum walaupun pemakaian di bawah `minimum_usage`. Gunakan field ini bersama `price_per_m3` & `minimum_usage` untuk menghitung estimasi tagihan di Flutter sebelum submit, supaya hasilnya konsisten dengan kalkulasi backend |
-| `last_reading` | Pembacaan meter paling baru. `null` jika belum pernah dicatat sama sekali |
-| `billing_history` | Maksimal 5 periode tagihan sebelum `last_reading`, urut dari terbaru |
+| Field             | Keterangan                                                                                                                                                                                                                              |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `registered_date` | Tanggal pemasangan/instalasi pelanggan                                                                                                                                                                                                  |
+| `tariff_group`    | Nama golongan tarif pelanggan                                                                                                                                                                                                           |
+| `minimum_usage`   | Batas minimal pemakaian (m3) yang tetap dikenakan tarif penuh                                                                                                                                                                           |
+| `minimum_charge`  | Tagihan minimum walaupun pemakaian di bawah `minimum_usage`. Gunakan field ini bersama `price_per_m3` & `minimum_usage` untuk menghitung estimasi tagihan di Flutter sebelum submit, supaya hasilnya konsisten dengan kalkulasi backend |
+| `last_reading`    | Pembacaan meter paling baru. `null` jika belum pernah dicatat sama sekali                                                                                                                                                               |
+| `billing_history` | Maksimal 5 periode tagihan sebelum `last_reading`, urut dari terbaru                                                                                                                                                                    |
 
 **Response 404 — Pelanggan tidak ditemukan**
 
@@ -641,9 +654,9 @@ Mengembalikan daftar zona aktif dan golongan tarif aktif untuk mengisi dropdown 
       {
         "id": 1,
         "name": "Tarif Rumah Tangga",
-        "price_per_m3": 2500.00,
-        "minimum_charge": 15000.00,
-        "minimum_usage": 5.00
+        "price_per_m3": 2500.0,
+        "minimum_charge": 15000.0,
+        "minimum_usage": 5.0
       }
     ]
   },
@@ -651,9 +664,9 @@ Mengembalikan daftar zona aktif dan golongan tarif aktif untuk mengisi dropdown 
 }
 ```
 
-| Field | Keterangan |
-|-------|-----------|
-| `zones` | Hanya zona dengan `is_active = true` |
+| Field     | Keterangan                                                                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `zones`   | Hanya zona dengan `is_active = true`                                                                                                             |
 | `tariffs` | Hanya golongan tarif dengan `is_active = true`. Gunakan `price_per_m3`, `minimum_charge`, `minimum_usage` untuk preview estimasi tagihan di form |
 
 ---
@@ -682,19 +695,19 @@ POST /api/petugas/customers
 }
 ```
 
-| Field | Tipe | Wajib | Keterangan |
-|-------|------|-------|-----------|
-| `customer_number` | string | Tidak | Dikosongkan (`null`) untuk generate otomatis format `PDAM-2026-0001` |
-| `name` | string | Ya | Nama pelanggan |
-| `address` | string | Ya | Alamat lengkap |
-| `phone` | string | Tidak | Format nomor telepon (`0-9`, `+`, `-`, spasi) |
-| `zone_id` | integer | Ya | ID zona, harus ada di tabel `zones` |
-| `tariff_rate_id` | integer | Ya | ID golongan tarif, harus ada di tabel `tariff_rates` |
-| `installation_date` | string (Y-m-d) | Tidak | Tanggal pemasangan |
-| `initial_meter` | float | Tidak | Angka meter awal, default `0` |
-| `is_active` | boolean | Tidak | Status aktif, default `true` |
-| `notes` | string | Tidak | Catatan tambahan |
-| `user_id` | integer | Tidak | Hubungkan ke akun login pelanggan (untuk fitur cek tagihan di app pelanggan) |
+| Field               | Tipe           | Wajib | Keterangan                                                                   |
+| ------------------- | -------------- | ----- | ---------------------------------------------------------------------------- |
+| `customer_number`   | string         | Tidak | Dikosongkan (`null`) untuk generate otomatis format `PDAM-2026-0001`         |
+| `name`              | string         | Ya    | Nama pelanggan                                                               |
+| `address`           | string         | Ya    | Alamat lengkap                                                               |
+| `phone`             | string         | Tidak | Format nomor telepon (`0-9`, `+`, `-`, spasi)                                |
+| `zone_id`           | integer        | Ya    | ID zona, harus ada di tabel `zones`                                          |
+| `tariff_rate_id`    | integer        | Ya    | ID golongan tarif, harus ada di tabel `tariff_rates`                         |
+| `installation_date` | string (Y-m-d) | Tidak | Tanggal pemasangan                                                           |
+| `initial_meter`     | float          | Tidak | Angka meter awal, default `0`                                                |
+| `is_active`         | boolean        | Tidak | Status aktif, default `true`                                                 |
+| `notes`             | string         | Tidak | Catatan tambahan                                                             |
+| `user_id`           | integer        | Tidak | Hubungkan ke akun login pelanggan (untuk fitur cek tagihan di app pelanggan) |
 
 **Response 201 — Berhasil**
 
@@ -732,9 +745,9 @@ PUT /api/petugas/customers/{id}
 
 **Path Parameter**
 
-| Parameter | Tipe | Keterangan |
-|-----------|------|-----------|
-| `id` | integer | ID pelanggan |
+| Parameter | Tipe    | Keterangan   |
+| --------- | ------- | ------------ |
+| `id`      | integer | ID pelanggan |
 
 **Request Body** — sama seperti [3.5](#35-tambah-pelanggan), semua field wajib diisi ulang (bukan partial update).
 
@@ -787,9 +800,9 @@ DELETE /api/petugas/customers/{id}
 
 **Path Parameter**
 
-| Parameter | Tipe | Keterangan |
-|-----------|------|-----------|
-| `id` | integer | ID pelanggan |
+| Parameter | Tipe    | Keterangan   |
+| --------- | ------- | ------------ |
+| `id`      | integer | ID pelanggan |
 
 **Response 200 — Berhasil**
 
@@ -812,10 +825,10 @@ GET /api/petugas/water-readings?year=2026&month=6
 
 **Query Parameter**
 
-| Parameter | Tipe | Default | Keterangan |
-|-----------|------|---------|-----------|
-| `year` | integer | tahun sekarang | Filter tahun periode |
-| `month` | integer | bulan sekarang | Filter bulan periode (1–12) |
+| Parameter | Tipe    | Default        | Keterangan                  |
+| --------- | ------- | -------------- | --------------------------- |
+| `year`    | integer | tahun sekarang | Filter tahun periode        |
+| `month`   | integer | bulan sekarang | Filter bulan periode (1–12) |
 
 **Response 200**
 
@@ -835,12 +848,12 @@ GET /api/petugas/water-readings?year=2026&month=6
       "period_month": 6,
       "period_label": "Juni 2026",
       "reading_date": "2026-06-03",
-      "previous_reading": 132.80,
-      "current_reading": 145.20,
-      "usage_m3": 12.40,
-      "price_per_m3": 2500.00,
-      "minimum_charge": 15000.00,
-      "total_amount": 31000.00,
+      "previous_reading": 132.8,
+      "current_reading": 145.2,
+      "usage_m3": 12.4,
+      "price_per_m3": 2500.0,
+      "minimum_charge": 15000.0,
+      "total_amount": 31000.0,
       "payment_status": "belum_bayar",
       "notes": null
     }
@@ -870,24 +883,26 @@ POST /api/petugas/water-readings
   "customer_id": 5,
   "period_year": 2026,
   "period_month": 6,
-  "current_reading": 145.20,
+  "current_reading": 145.2,
   "reading_date": "2026-06-03",
   "notes": "Meteran normal",
-  "photo": "(file binary, opsional)"
+  "photo": "(file binary, opsional)",
+  "send_whatsapp": true
 }
 ```
 
-| Field | Tipe | Wajib | Keterangan |
-|-------|------|-------|-----------|
-| `customer_id` | integer | Ya | ID pelanggan |
-| `period_year` | integer | Ya | Tahun periode (min 2000) |
-| `period_month` | integer | Ya | Bulan periode (1–12) |
-| `current_reading` | float | Ya | Angka meter saat ini |
-| `reading_date` | string (Y-m-d) | Ya | Tanggal catat meter |
-| `notes` | string | Tidak | Catatan tambahan |
-| `photo` | file (jpg/png/webp) | Tidak | Foto meter, maksimal 5MB |
+| Field             | Tipe                | Wajib | Keterangan                                                                                          |
+| ----------------- | ------------------- | ----- | ----------------------------------------------------------------------------------------------------- |
+| `customer_id`     | integer             | Ya    | ID pelanggan                                                                                         |
+| `period_year`     | integer             | Ya    | Tahun periode (min 2000)                                                                             |
+| `period_month`    | integer             | Ya    | Bulan periode (1–12)                                                                                 |
+| `current_reading` | float               | Ya    | Angka meter saat ini                                                                                 |
+| `reading_date`    | string (Y-m-d)      | Ya    | Tanggal catat meter                                                                                  |
+| `notes`           | string              | Tidak | Catatan tambahan                                                                                     |
+| `photo`           | file (jpg/png/webp) | Tidak | Foto meter, maksimal 5MB                                                                             |
+| `send_whatsapp`   | boolean             | Tidak | Kirim notifikasi tagihan via WhatsApp setelah berhasil dicatat. Default `true` jika tidak dikirim    |
 
-> **Catatan:** Sistem otomatis menghitung `previous_reading`, `usage_m3`, dan `total_amount` berdasarkan tarif pelanggan. Jika pelanggan sudah dicatat pada periode yang sama, request akan ditolak (422).
+> **Catatan:** Sistem otomatis menghitung `previous_reading`, `usage_m3`, dan `total_amount` berdasarkan tarif pelanggan. Jika pelanggan sudah dicatat pada periode yang sama, request akan ditolak (422). Notifikasi WhatsApp dikirim asinkron lewat job queue — kirim `send_whatsapp: false` untuk melewati pengiriman.
 
 **Response 201 — Berhasil**
 
@@ -906,12 +921,12 @@ POST /api/petugas/water-readings
     "period_month": 6,
     "period_label": "Juni 2026",
     "reading_date": "2026-06-03",
-    "previous_reading": 132.80,
-    "current_reading": 145.20,
-    "usage_m3": 12.40,
-    "price_per_m3": 2500.00,
-    "minimum_charge": 15000.00,
-    "total_amount": 31000.00,
+    "previous_reading": 132.8,
+    "current_reading": 145.2,
+    "usage_m3": 12.4,
+    "price_per_m3": 2500.0,
+    "minimum_charge": 15000.0,
+    "total_amount": 31000.0,
     "payment_status": "belum_bayar",
     "notes": "Meteran normal",
     "photo_url": "https://your-domain.com/storage/water-readings/abc123.jpg"
@@ -920,8 +935,8 @@ POST /api/petugas/water-readings
 }
 ```
 
-| Field | Keterangan |
-|-------|-----------|
+| Field       | Keterangan                                                      |
+| ----------- | --------------------------------------------------------------- |
 | `photo_url` | URL publik foto meter. `null` jika tidak ada foto yang diunggah |
 
 ---
@@ -944,11 +959,11 @@ GET /api/petugas/tagihan?zone_id=1&year=2026&month=6
 
 **Query Parameter**
 
-| Parameter | Tipe | Keterangan |
-|-----------|------|-----------|
-| `zone_id` | integer | Filter zona |
-| `year` | integer | Filter tahun periode |
-| `month` | integer | Filter bulan periode |
+| Parameter | Tipe    | Keterangan           |
+| --------- | ------- | -------------------- |
+| `zone_id` | integer | Filter zona          |
+| `year`    | integer | Filter tahun periode |
+| `month`   | integer | Filter bulan periode |
 
 **Response 200**
 
@@ -966,8 +981,8 @@ GET /api/petugas/tagihan?zone_id=1&year=2026&month=6
       "period_year": 2026,
       "period_month": 6,
       "period_label": "Juni 2026",
-      "total_amount": 31000.00,
-      "remaining_amount": 31000.00,
+      "total_amount": 31000.0,
+      "remaining_amount": 31000.0,
       "payment_status": "belum_bayar"
     }
   ],
@@ -997,13 +1012,13 @@ POST /api/petugas/payments
 }
 ```
 
-| Field | Tipe | Wajib | Nilai Valid | Keterangan |
-|-------|------|-------|------------|-----------|
-| `water_reading_id` | integer | Ya | — | ID tagihan yang dibayar |
-| `amount_paid` | float | Ya | > 0 | Jumlah yang dibayar |
-| `payment_date` | string (Y-m-d) | Ya | — | Tanggal bayar |
-| `payment_method` | string | Ya | `tunai`, `transfer`, `qris` | Metode pembayaran |
-| `notes` | string | Tidak | — | Catatan |
+| Field              | Tipe           | Wajib | Nilai Valid                 | Keterangan              |
+| ------------------ | -------------- | ----- | --------------------------- | ----------------------- |
+| `water_reading_id` | integer        | Ya    | —                           | ID tagihan yang dibayar |
+| `amount_paid`      | float          | Ya    | > 0                         | Jumlah yang dibayar     |
+| `payment_date`     | string (Y-m-d) | Ya    | —                           | Tanggal bayar           |
+| `payment_method`   | string         | Ya    | `tunai`, `transfer`, `qris` | Metode pembayaran       |
+| `notes`            | string         | Tidak | —                           | Catatan                 |
 
 > **Catatan:** Sistem mendukung pembayaran sebagian (cicilan). `amount_paid` tidak boleh melebihi sisa tagihan. Setelah konfirmasi, transaksi kas masuk otomatis tercatat.
 
@@ -1019,7 +1034,7 @@ POST /api/petugas/payments
     "water_reading_id": 55,
     "customer_id": 5,
     "period_label": "Juni 2026",
-    "amount_paid": 31000.00,
+    "amount_paid": 31000.0,
     "payment_date": "2026-06-09",
     "payment_method": "tunai",
     "status": "lunas",
@@ -1030,10 +1045,10 @@ POST /api/petugas/payments
 }
 ```
 
-| `status` | Keterangan |
-|---------|-----------|
+| `status`   | Keterangan                               |
+| ---------- | ---------------------------------------- |
 | `sebagian` | Pembayaran sebagian, tagihan belum lunas |
-| `lunas` | Tagihan lunas setelah pembayaran ini |
+| `lunas`    | Tagihan lunas setelah pembayaran ini     |
 
 ---
 
@@ -1055,23 +1070,23 @@ GET /api/petugas/maintenance?status=dilaporkan&priority=darurat
 
 **Query Parameter**
 
-| Parameter | Tipe | Nilai Valid | Keterangan |
-|-----------|------|------------|-----------|
-| `status` | string | `dilaporkan`, `dalam_proses`, `selesai`, `ditunda` | Filter status |
-| `priority` | string | `rendah`, `sedang`, `tinggi`, `darurat` | Filter prioritas |
-| `category` | string | Lihat tabel kategori | Filter kategori |
-| `zone_id` | integer | — | Filter zona |
+| Parameter  | Tipe    | Nilai Valid                                        | Keterangan       |
+| ---------- | ------- | -------------------------------------------------- | ---------------- |
+| `status`   | string  | `dilaporkan`, `dalam_proses`, `selesai`, `ditunda` | Filter status    |
+| `priority` | string  | `rendah`, `sedang`, `tinggi`, `darurat`            | Filter prioritas |
+| `category` | string  | Lihat tabel kategori                               | Filter kategori  |
+| `zone_id`  | integer | —                                                  | Filter zona      |
 
 **Kategori Maintenance**
 
-| Nilai | Label |
-|-------|-------|
-| `pipa_bocor` | Pipa Bocor |
-| `meteran_rusak` | Meteran Rusak |
-| `pompa` | Pompa |
-| `reservoir` | Reservoir |
+| Nilai            | Label          |
+| ---------------- | -------------- |
+| `pipa_bocor`     | Pipa Bocor     |
+| `meteran_rusak`  | Meteran Rusak  |
+| `pompa`          | Pompa          |
+| `reservoir`      | Reservoir      |
 | `instalasi_baru` | Instalasi Baru |
-| `lainnya` | Lainnya |
+| `lainnya`        | Lainnya        |
 
 **Response 200**
 
@@ -1133,18 +1148,18 @@ POST /api/petugas/maintenance
 }
 ```
 
-| Field | Tipe | Wajib | Keterangan |
-|-------|------|-------|-----------|
-| `title` | string | Ya | Judul singkat laporan |
-| `location` | string | Ya | Lokasi kejadian |
-| `category` | string | Ya | Lihat tabel kategori di [3.14](#314-daftar-laporan-maintenance) |
-| `priority` | string | Ya | `rendah`, `sedang`, `tinggi`, `darurat` |
-| `reported_date` | string (Y-m-d) | Ya | Tanggal laporan |
-| `zone_id` | integer | Tidak | ID zona terdampak |
-| `customer_id` | integer | Tidak | ID pelanggan terkait (jika ada) |
-| `description` | string | Tidak | Deskripsi detail |
-| `material_cost` | float | Tidak | Estimasi biaya material |
-| `labor_cost` | float | Tidak | Estimasi biaya tenaga kerja |
+| Field           | Tipe           | Wajib | Keterangan                                                      |
+| --------------- | -------------- | ----- | --------------------------------------------------------------- |
+| `title`         | string         | Ya    | Judul singkat laporan                                           |
+| `location`      | string         | Ya    | Lokasi kejadian                                                 |
+| `category`      | string         | Ya    | Lihat tabel kategori di [3.14](#314-daftar-laporan-maintenance) |
+| `priority`      | string         | Ya    | `rendah`, `sedang`, `tinggi`, `darurat`                         |
+| `reported_date` | string (Y-m-d) | Ya    | Tanggal laporan                                                 |
+| `zone_id`       | integer        | Tidak | ID zona terdampak                                               |
+| `customer_id`   | integer        | Tidak | ID pelanggan terkait (jika ada)                                 |
+| `description`   | string         | Tidak | Deskripsi detail                                                |
+| `material_cost` | float          | Tidak | Estimasi biaya material                                         |
+| `labor_cost`    | float          | Tidak | Estimasi biaya tenaga kerja                                     |
 
 **Response 201** — Struktur sama dengan item pada [3.14](#314-daftar-laporan-maintenance).
 
@@ -1177,12 +1192,12 @@ PATCH /api/petugas/maintenance/{id}/status
 }
 ```
 
-| Field | Tipe | Wajib | Keterangan |
-|-------|------|-------|-----------|
-| `status` | string | Ya | `dilaporkan`, `dalam_proses`, `selesai`, `ditunda` |
-| `material_cost` | float | Tidak | Biaya material aktual |
-| `labor_cost` | float | Tidak | Biaya tenaga kerja aktual |
-| `notes` | string | Tidak | Catatan penyelesaian |
+| Field           | Tipe   | Wajib | Keterangan                                         |
+| --------------- | ------ | ----- | -------------------------------------------------- |
+| `status`        | string | Ya    | `dilaporkan`, `dalam_proses`, `selesai`, `ditunda` |
+| `material_cost` | float  | Tidak | Biaya material aktual                              |
+| `labor_cost`    | float  | Tidak | Biaya tenaga kerja aktual                          |
+| `notes`         | string | Tidak | Catatan penyelesaian                               |
 
 > **Catatan:** Saat status berubah ke `dalam_proses`, `handled_date` otomatis diisi. Saat `selesai`, `completed_date` diisi dan biaya otomatis tercatat ke kas keluar.
 
@@ -1199,9 +1214,9 @@ PATCH /api/petugas/maintenance/{id}/status
     "status_label": "Selesai",
     "handled_date": "2026-06-08",
     "completed_date": "2026-06-09",
-    "material_cost": 150000.00,
-    "labor_cost": 100000.00,
-    "total_cost": 250000.00,
+    "material_cost": 150000.0,
+    "labor_cost": 100000.0,
+    "total_cost": 250000.0,
     "...": "field lainnya"
   },
   "meta": null

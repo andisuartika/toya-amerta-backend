@@ -17,9 +17,18 @@ use App\Http\Controllers\Admin\WhatsappTemplateController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Public\CustomerCheckController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'))->name('home');
+
+// ── Cek Tagihan Publik (tanpa login, diakses dari link WhatsApp) ────
+Route::prefix('cek')->name('public.cek.')->group(function () {
+    Route::get('/',                          [CustomerCheckController::class, 'index'])->name('index');
+    Route::post('/',                         [CustomerCheckController::class, 'search'])->name('search');
+    Route::get('/{customerNumber}',          [CustomerCheckController::class, 'history'])->name('history');
+    Route::get('/{customerNumber}/{reading}', [CustomerCheckController::class, 'detail'])->name('detail');
+});
 
 // ── Auth ───────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {

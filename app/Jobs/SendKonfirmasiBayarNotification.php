@@ -22,6 +22,7 @@ class SendKonfirmasiBayarNotification implements ShouldQueue
         . "Jumlah Bayar: Rp {jumlah_bayar}\n"
         . "Status Tagihan: {status}\n"
         . "{sisa_block}\n"
+        . "Cek detail: {link}\n\n"
         . 'Terima kasih atas pembayaran Anda 🙏';
 
     public function __construct(private int $paymentRecordId) {}
@@ -46,10 +47,14 @@ class SendKonfirmasiBayarNotification implements ShouldQueue
             $sisaBlock = 'Sisa Tagihan: Rp ' . number_format($remaining, 0, ',', '.');
         }
 
+        $link = $reading
+            ? route('public.cek.detail', [$customer->customer_number, $reading->id])
+            : route('public.cek.history', $customer->customer_number);
+
         $template = WhatsappTemplate::where('type', 'konfirmasi_bayar')->value('template') ?: self::DEFAULT_TEMPLATE;
 
         $message = str_replace(
-            ['{nama}', '{no_kwitansi}', '{periode}', '{jumlah_bayar}', '{status}', '{sisa_block}'],
+            ['{nama}', '{no_kwitansi}', '{periode}', '{jumlah_bayar}', '{status}', '{sisa_block}', '{link}'],
             [
                 $customer->name,
                 $payment->receipt_number,
@@ -57,6 +62,7 @@ class SendKonfirmasiBayarNotification implements ShouldQueue
                 number_format($payment->amount_paid, 0, ',', '.'),
                 $isLunas ? 'LUNAS' : 'Sebagian',
                 $sisaBlock,
+                $link,
             ],
             $template,
         );

@@ -13,6 +13,7 @@ readonly class WaterReadingDTO
         public string $reading_date,
         public ?string $notes,
         public ?string $photo_url = null,
+        public bool    $send_whatsapp = true,
     ) {}
 
     public static function fromArray(array $data): self
@@ -26,6 +27,7 @@ readonly class WaterReadingDTO
             reading_date:   $data['reading_date'],
             notes:          $data['notes'] ?? null,
             photo_url:      $data['photo_url'] ?? null,
+            send_whatsapp:  $data['send_whatsapp'] ?? true,
         );
     }
 }

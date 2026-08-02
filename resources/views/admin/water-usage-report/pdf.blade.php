@@ -137,7 +137,7 @@
                 <td class="td-right">{{ number_format($usage, 2) }}</td>
                 <td class="td-right">{{ number_format($r->total_amount, 0, ',', '.') }}</td>
                 <td class="td-center">
-                    @if($r->payment_status === 'paid')
+                    @if($r->payment_status === 'lunas')
                         <span class="badge-lunas">Lunas</span>
                     @else
                         <span class="badge-belum">Belum</span>

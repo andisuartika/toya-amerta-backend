@@ -209,7 +209,7 @@
                                     Rp {{ number_format($r->total_amount, 0, ',', '.') }}
                                 </td>
                                 <td class="text-center">
-                                    @if($r->payment_status === 'paid')
+                                    @if($r->payment_status === 'lunas')
                                         <span class="badge bg-success-subtle text-success fs-11">Lunas</span>
                                     @else
                                         <span class="badge bg-danger-subtle text-danger fs-11">Belum Lunas</span>

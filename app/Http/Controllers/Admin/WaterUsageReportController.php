@@ -106,7 +106,7 @@ class WaterUsageReportController extends Controller
     {
         $usageM3   = $readings->sum(fn ($r) => $r->current_reading - $r->previous_reading);
         $totalBill = $readings->sum('total_amount');
-        $paid      = $readings->where('payment_status', 'paid')->sum('total_amount');
+        $paid      = $readings->where('payment_status', 'lunas')->sum('total_amount');
         $unpaid    = $totalBill - $paid;
 
         return [
@@ -207,14 +207,14 @@ class WaterUsageReportController extends Controller
             $sheet->setCellValue("G{$row}", $r->current_reading);
             $sheet->setCellValue("H{$row}", $usage);
             $sheet->setCellValue("I{$row}", $r->total_amount);
-            $sheet->setCellValue("J{$row}", $r->payment_status === 'paid' ? 'Lunas' : 'Belum Lunas');
+            $sheet->setCellValue("J{$row}", $r->payment_status === 'lunas' ? 'Lunas' : 'Belum Lunas');
 
             $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
                 'fill'    => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => $bg]],
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'E0E0E0']]],
             ]);
             $sheet->getStyle("J{$row}")->getFont()->getColor()->setRGB(
-                $r->payment_status === 'paid' ? '388E3C' : 'D32F2F'
+                $r->payment_status === 'lunas' ? '388E3C' : 'D32F2F'
             );
             $sheet->getStyle("J{$row}")->getFont()->setBold(true);
             $sheet->getStyle("A{$row}:J{$row}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);

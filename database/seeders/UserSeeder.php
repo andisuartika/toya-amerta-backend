@@ -18,25 +18,18 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'name'     => 'Administrator',
-                'email'    => 'admin@toyaamerta.id',
+                'email'    => 'admin@mail.com',
                 'phone'    => '081234567890',
                 'role'     => 'admin',
                 'spatie'   => $roleAdmin,
             ],
             [
-                'name'     => 'Budi Santoso',
-                'email'    => 'petugas@toyaamerta.id',
+                'name'     => 'Kadek Suadana',
+                'email'    => 'petugas@mail.com',
                 'phone'    => '081234567891',
                 'role'     => 'petugas',
                 'spatie'   => $rolePetugas,
-            ],
-            [
-                'name'     => 'Siti Rahayu',
-                'email'    => 'pelanggan@toyaamerta.id',
-                'phone'    => '081234567892',
-                'role'     => 'pelanggan',
-                'spatie'   => $rolePelanggan,
-            ],
+            ]
         ];
 
         foreach ($users as $data) {
@@ -58,9 +51,8 @@ class UserSeeder extends Seeder
         $this->command->table(
             ['Name', 'Email', 'Role', 'Password'],
             [
-                ['Administrator', 'admin@toyaamerta.id',     'admin',     'password'],
-                ['Budi Santoso',  'petugas@toyaamerta.id',   'petugas',   'password'],
-                ['Siti Rahayu',   'pelanggan@toyaamerta.id', 'pelanggan', 'password'],
+                ['Administrator', 'admin@mail.com',     'admin',     'password'],
+                ['Kadek Suadana',  'petugas@mail.com',   'petugas',   'password']
             ]
         );
     }

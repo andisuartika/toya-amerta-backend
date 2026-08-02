@@ -46,6 +46,7 @@ if ($cmd === 'fix-storage') {
     $base = __DIR__.'/../../toya-amerta';
     $dirs = [
         '/storage/app/public',
+        '/storage/fonts',
         '/storage/framework/cache/data',
         '/storage/framework/sessions',
         '/storage/framework/testing',

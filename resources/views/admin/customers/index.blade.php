@@ -198,8 +198,9 @@
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Meteran Awal (m³)</label>
                             <div class="input-group">
-                                <input type="number" name="initial_meter" id="customerInitialMeter"
-                                       class="form-control" min="0" step="0.01" value="0" placeholder="0">
+                                <input type="text" id="customerInitialMeterDisplay" class="form-control input-ribuan"
+                                       inputmode="decimal" autocomplete="off" placeholder="0" data-target="#customerInitialMeter">
+                                <input type="hidden" name="initial_meter" id="customerInitialMeter" value="0">
                                 <span class="input-group-text">m³</span>
                             </div>
                             <div class="form-text">Angka meter saat pertama kali dipasang.</div>
@@ -327,6 +328,7 @@
         document.getElementById('formCustomer').action = '{{ route('admin.customers.store') }}';
         document.getElementById('customerMethod').innerHTML = '';
         document.getElementById('formCustomer').reset();
+        window.setRibuanValue(document.getElementById('customerInitialMeterDisplay'), '0');
         document.getElementById('customerActive').checked = true;
         document.getElementById('enableFee').checked = false;
         document.getElementById('feeFields').style.display = 'none';
@@ -350,7 +352,7 @@
         document.getElementById('customerTariff').value      = d.tariff_rate_id;
         document.getElementById('customerPhone').value       = d.phone || '';
         document.getElementById('customerInstallDate').value  = d.installation_date || '';
-        document.getElementById('customerInitialMeter').value = d.initial_meter || '0';
+        window.setRibuanValue(document.getElementById('customerInitialMeterDisplay'), d.initial_meter || '0');
         document.getElementById('customerAddress').value      = d.address || '';
         document.getElementById('customerActive').checked     = d.active === '1';
     });
@@ -379,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('customerTariff').value       = '{{ old('tariff_rate_id') }}';
     document.getElementById('customerPhone').value        = '{{ old('phone') }}';
     document.getElementById('customerInstallDate').value  = '{{ old('installation_date') }}';
-    document.getElementById('customerInitialMeter').value = '{{ old('initial_meter', '0') }}';
+    window.setRibuanValue(document.getElementById('customerInitialMeterDisplay'), '{{ old('initial_meter', '0') }}');
     document.getElementById('customerAddress').value      = '{{ addslashes(old('address', '')) }}';
     document.getElementById('customerActive').checked     = {{ old('is_active') ? 'true' : 'false' }};
     document.getElementById('sectionBiayaPasang').style.display = '';

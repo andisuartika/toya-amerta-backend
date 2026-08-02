@@ -104,10 +104,11 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" name="rows[{{ $i }}][amount_paid]"
-                                               class="form-control form-control-sm input-amount-paid"
-                                               data-index="{{ $i }}"
-                                               value="{{ $row['total_amount'] }}" min="0" step="1" style="display:none;">
+                                        <input type="text" class="form-control form-control-sm input-ribuan input-amount-paid"
+                                               inputmode="numeric" autocomplete="off"
+                                               data-index="{{ $i }}" data-target="#amountPaid{{ $i }}"
+                                               value="{{ number_format($row['total_amount'], 0, ',', '.') }}" style="display:none;">
+                                        <input type="hidden" name="rows[{{ $i }}][amount_paid]" id="amountPaid{{ $i }}" value="{{ $row['total_amount'] }}">
                                     </td>
                                 </tr>
                             @endforeach

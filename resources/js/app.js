@@ -25,6 +25,55 @@ import ApexCharts from 'apexcharts'
 window.ApexCharts = ApexCharts
 
 
+// Auto-format ribuan (thousand separator) untuk input rupiah / angka.
+// Pasang class "input-ribuan" pada <input type="text"> yang tampil ke user.
+// Jika perlu nilai mentah (tanpa titik) dikirim ke server, tambahkan
+// atribut data-target="#idInputHidden" yang menunjuk ke <input type="hidden">.
+function formatRibuan(el) {
+  // Hanya digit dan satu koma (pemisah desimal ala Indonesia) yang diizinkan.
+  let value = el.value.replace(/[^\d,]/g, '');
+  const firstComma = value.indexOf(',');
+  if (firstComma !== -1) {
+    value = value.slice(0, firstComma + 1) + value.slice(firstComma + 1).replace(/,/g, '');
+  }
+
+  const [intPart, decPart] = value.split(',');
+  const intFormatted = intPart ? parseInt(intPart, 10).toLocaleString('id-ID') : '';
+  el.value = decPart !== undefined ? intFormatted + ',' + decPart.slice(0, 2) : intFormatted;
+
+  const raw = intPart ? intPart + (decPart !== undefined ? '.' + decPart.slice(0, 2) : '') : '';
+  const targetSel = el.dataset.target;
+  if (targetSel) {
+    const hidden = document.querySelector(targetSel);
+    if (hidden) hidden.value = raw;
+  }
+
+  el.dispatchEvent(new CustomEvent('ribuan:change', { bubbles: true, detail: { raw } }));
+}
+window.formatRibuan = formatRibuan;
+
+// Isi input .input-ribuan secara terprogram (mis. saat populate modal edit)
+// dari nilai mentah (number atau string dengan titik desimal).
+window.setRibuanValue = function (el, rawValue) {
+  if (!el) return;
+  const str = (rawValue === null || rawValue === undefined || rawValue === '') ? '' : String(rawValue);
+  el.value = str.replace('.', ',');
+  formatRibuan(el);
+};
+
+// Capture phase: format & sync hidden target BEFORE any page-specific
+// 'input' listener attached directly to the element runs (those fire during
+// the bubble/"at target" phase, which comes after capture).
+document.addEventListener('input', function (e) {
+  if (e.target.matches && e.target.matches('.input-ribuan')) {
+    formatRibuan(e.target);
+  }
+}, true);
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.input-ribuan').forEach(formatRibuan);
+});
+
 class App {
   // All Components
   initComponents() {

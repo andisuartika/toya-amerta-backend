@@ -112,7 +112,9 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-medium">Angka Meter Saat Ini (m³) <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" name="current_reading" class="form-control" required placeholder="cth: 5230.50">
+                        <input type="text" id="masterCurrentReadingDisplay" class="form-control input-ribuan"
+                               inputmode="decimal" autocomplete="off" required placeholder="cth: 5.230,50" data-target="#masterCurrentReading">
+                        <input type="hidden" name="current_reading" id="masterCurrentReading">
                         <div class="form-text">Angka meter sebelumnya otomatis diambil dari pencatatan periode terakhir.</div>
                     </div>
 

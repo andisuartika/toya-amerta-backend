@@ -113,9 +113,10 @@
                         <div class="mb-3">
                             <label class="form-label fw-medium">Meter Saat Ini <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="current_reading" id="currentReading"
-                                       class="form-control" required step="0.01" min="0"
-                                       placeholder="0.00" value="{{ old('current_reading') }}">
+                                <input type="text" id="currentReadingDisplay" class="form-control input-ribuan"
+                                       inputmode="decimal" autocomplete="off" required
+                                       placeholder="0,00" data-target="#currentReading">
+                                <input type="hidden" name="current_reading" id="currentReading" value="{{ old('current_reading') }}">
                                 <span class="input-group-text">m³</span>
                             </div>
                             @error('current_reading')<div class="text-danger fs-12 mt-1">{{ $message }}</div>@enderror
@@ -252,6 +253,10 @@ window.addEventListener('load', function () {
     var prevReading = 0;
     var tariffData  = null;
 
+    @if ($errors->any())
+    window.setRibuanValue(document.getElementById('currentReadingDisplay'), '{{ old('current_reading') }}');
+    @endif
+
     var unrecordedUrl = '{{ route('admin.water-readings.unrecorded') }}';
 
     function initSelect2() {
@@ -319,7 +324,7 @@ window.addEventListener('load', function () {
             });
     });
 
-    document.getElementById('currentReading')?.addEventListener('input', updatePreview);
+    document.getElementById('currentReadingDisplay')?.addEventListener('input', updatePreview);
 
     function updatePreview() {
         var cur = parseFloat(document.getElementById('currentReading').value) || 0;

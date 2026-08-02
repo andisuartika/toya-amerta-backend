@@ -116,23 +116,26 @@
                             <label class="form-label fw-medium">Harga per m³ <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
-                                <input type="number" name="price_per_m3" id="tariffPrice"
-                                       class="form-control" required min="0" step="100" placeholder="0">
+                                <input type="text" id="tariffPriceDisplay" class="form-control input-ribuan"
+                                       inputmode="numeric" autocomplete="off" required placeholder="0" data-target="#tariffPrice">
+                                <input type="hidden" name="price_per_m3" id="tariffPrice">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Min. Tagihan <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
-                                <input type="number" name="minimum_charge" id="tariffMinCharge"
-                                       class="form-control" required min="0" step="100" placeholder="0">
+                                <input type="text" id="tariffMinChargeDisplay" class="form-control input-ribuan"
+                                       inputmode="numeric" autocomplete="off" required placeholder="0" data-target="#tariffMinCharge">
+                                <input type="hidden" name="minimum_charge" id="tariffMinCharge">
                             </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-medium">Min. Pemakaian <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="minimum_usage" id="tariffMinUsage"
-                                       class="form-control" required min="0" step="0.5" value="1">
+                                <input type="text" id="tariffMinUsageDisplay" class="form-control input-ribuan"
+                                       inputmode="decimal" autocomplete="off" required data-target="#tariffMinUsage" value="1">
+                                <input type="hidden" name="minimum_usage" id="tariffMinUsage" value="1">
                                 <span class="input-group-text">m³</span>
                             </div>
                             <div class="form-text">Pemakaian di bawah nilai ini dihitung sebesar minimum.</div>
@@ -174,7 +177,9 @@
         document.getElementById('formTariff').action = '{{ route('admin.tariff-rates.store') }}';
         document.getElementById('tariffMethod').innerHTML = '';
         document.getElementById('formTariff').reset();
-        document.getElementById('tariffMinUsage').value = '1';
+        window.setRibuanValue(document.getElementById('tariffPriceDisplay'), '');
+        window.setRibuanValue(document.getElementById('tariffMinChargeDisplay'), '');
+        window.setRibuanValue(document.getElementById('tariffMinUsageDisplay'), '1');
         document.getElementById('tariffActive').checked = true;
     });
 
@@ -186,9 +191,9 @@
         document.getElementById('formTariff').action = '/admin/tariff-rates/' + d.id;
         document.getElementById('tariffMethod').innerHTML = '<input type="hidden" name="_method" value="PUT">';
         document.getElementById('tariffName').value      = d.name;
-        document.getElementById('tariffPrice').value     = d.price;
-        document.getElementById('tariffMinCharge').value = d.mincharge;
-        document.getElementById('tariffMinUsage').value  = d.minusage;
+        window.setRibuanValue(document.getElementById('tariffPriceDisplay'), d.price);
+        window.setRibuanValue(document.getElementById('tariffMinChargeDisplay'), d.mincharge);
+        window.setRibuanValue(document.getElementById('tariffMinUsageDisplay'), d.minusage);
         document.getElementById('tariffActive').checked  = d.active === '1';
     });
 

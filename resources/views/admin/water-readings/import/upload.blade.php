@@ -72,7 +72,10 @@
                             <label class="form-label fw-medium">Biaya Admin Bulan Ini (opsional)</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
-                                <input type="number" name="biaya_admin" class="form-control" min="0" step="1" placeholder="0" value="{{ old('biaya_admin') }}">
+                                <input type="text" class="form-control input-ribuan" inputmode="numeric" autocomplete="off"
+                                       placeholder="0" data-target="#biayaAdmin"
+                                       value="{{ old('biaya_admin') ? number_format((float) old('biaya_admin'), 0, ',', '.') : '' }}">
+                                <input type="hidden" name="biaya_admin" id="biayaAdmin" value="{{ old('biaya_admin') }}">
                             </div>
                             <div class="form-text">Jika diisi, akan otomatis tercatat sebagai 1 transaksi kas keluar kategori "Biaya Administrasi" untuk periode ini.</div>
                             @error('biaya_admin')<div class="text-danger fs-12 mt-1">{{ $message }}</div>@enderror
@@ -82,7 +85,10 @@
                             <label class="form-label fw-medium">Pembayaran ke PDAM Pusat Bulan Ini (opsional)</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
-                                <input type="number" name="pdam_payment" class="form-control" min="0" step="1" placeholder="0" value="{{ old('pdam_payment') }}">
+                                <input type="text" class="form-control input-ribuan" inputmode="numeric" autocomplete="off"
+                                       placeholder="0" data-target="#pdamPayment"
+                                       value="{{ old('pdam_payment') ? number_format((float) old('pdam_payment'), 0, ',', '.') : '' }}">
+                                <input type="hidden" name="pdam_payment" id="pdamPayment" value="{{ old('pdam_payment') }}">
                             </div>
                             <div class="form-text">Jika diisi, akan otomatis dibuat 1 tagihan PDAM Pusat (status lunas) + tercatat sebagai kas keluar kategori "Tagihan PDAM Pusat" untuk periode ini. Dilewati jika tagihan PDAM periode ini sudah ada.</div>
                             @error('pdam_payment')<div class="text-danger fs-12 mt-1">{{ $message }}</div>@enderror

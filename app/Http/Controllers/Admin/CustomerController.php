@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Domain\Contracts\CustomerRepositoryInterface;
+use App\Domain\Contracts\MeterReplacementRepositoryInterface;
+use App\Domain\Contracts\WaterReadingRepositoryInterface;
 use App\Domain\Contracts\ZoneRepositoryInterface;
 use App\Domain\DTOs\Customer\CustomerDTO;
+use App\Domain\DTOs\MeterReplacement\MeterReplacementDTO;
 use App\Domain\UseCases\Customer\CreateCustomerUseCase;
 use App\Domain\UseCases\Customer\DeleteCustomerUseCase;
 use App\Domain\UseCases\Customer\UpdateCustomerUseCase;
+use App\Domain\UseCases\MeterReplacement\ReplaceMeterUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CustomerRequest;
+use App\Http\Requests\Admin\MeterReplacementRequest;
 use App\Models\CashTransaction;
 use App\Models\Customer;
 use App\Models\NewCustomerFee;
@@ -22,11 +27,14 @@ use Illuminate\View\View;
 class CustomerController extends Controller
 {
     public function __construct(
-        private CreateCustomerUseCase       $createUseCase,
-        private UpdateCustomerUseCase       $updateUseCase,
-        private DeleteCustomerUseCase       $deleteUseCase,
-        private ZoneRepositoryInterface     $zoneRepo,
-        private CustomerRepositoryInterface $customerRepo,
+        private CreateCustomerUseCase              $createUseCase,
+        private UpdateCustomerUseCase              $updateUseCase,
+        private DeleteCustomerUseCase              $deleteUseCase,
+        private ReplaceMeterUseCase                $replaceMeterUseCase,
+        private ZoneRepositoryInterface            $zoneRepo,
+        private CustomerRepositoryInterface        $customerRepo,
+        private WaterReadingRepositoryInterface    $waterReadingRepo,
+        private MeterReplacementRepositoryInterface $meterReplacementRepo,
     ) {}
 
     public function index(Request $request): View
@@ -99,5 +107,36 @@ class CustomerController extends Controller
     public function generateNumber(): JsonResponse
     {
         return response()->json(['number' => $this->customerRepo->generateCustomerNumber()]);
+    }
+
+    /** AJAX: info meteran pelanggan untuk modal Ganti Meteran (angka acuan saat ini + riwayat) */
+    public function meterInfo(int $customer): JsonResponse
+    {
+        $this->customerRepo->findById($customer);
+
+        return response()->json([
+            'current_reading' => $this->waterReadingRepo->baselineReading($customer),
+            'history'         => $this->meterReplacementRepo->forCustomer($customer)->map(fn ($r) => [
+                'replaced_at'        => $r->replaced_at->format('d/m/Y'),
+                'old_reading_final'  => $r->old_reading_final,
+                'new_reading_start'  => $r->new_reading_start,
+                'reason'             => $r->reason,
+                'notes'              => $r->notes,
+                'recorded_by'        => $r->recordedBy?->name,
+            ])->values(),
+        ]);
+    }
+
+    public function replaceMeter(MeterReplacementRequest $request, int $customer): RedirectResponse
+    {
+        $this->customerRepo->findById($customer);
+
+        $data = $request->validated();
+        $data['customer_id'] = $customer;
+        $data['recorded_by'] = auth()->id();
+
+        $this->replaceMeterUseCase->execute(MeterReplacementDTO::fromArray($data));
+
+        return back()->with('success', 'Penggantian meteran berhasil dicatat. Pencatatan periode berikutnya akan memakai angka meteran baru.');
     }
 }

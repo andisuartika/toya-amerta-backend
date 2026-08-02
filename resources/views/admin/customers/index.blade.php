@@ -64,7 +64,7 @@
                                     <th>Alamat</th>
                                     <th class="text-end" style="width:100px">Meter Awal</th>
                                     <th class="text-center" style="width:90px">Status</th>
-                                    <th class="text-end" style="width:100px">Aksi</th>
+                                    <th class="text-end pe-3" style="width:120px">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -92,27 +92,36 @@
                                         @endif
                                     </td>
                                     <td class="text-end">
-                                        <a class="btn btn-sm bg-primary-subtle me-1" role="button"
-                                            data-bs-toggle="modal" data-bs-target="#modalCustomer"
-                                            data-id="{{ $customer->id }}"
-                                            data-customer_number="{{ $customer->customer_number }}"
-                                            data-name="{{ $customer->name }}"
-                                            data-zone_id="{{ $customer->zone_id }}"
-                                            data-tariff_rate_id="{{ $customer->tariff_rate_id }}"
-                                            data-address="{{ $customer->address }}"
-                                            data-phone="{{ $customer->phone }}"
-                                            data-installation_date="{{ $customer->installation_date }}"
-                                            data-initial_meter="{{ $customer->initial_meter }}"
-                                            data-active="{{ $customer->is_active ? '1' : '0' }}"
-                                            title="Edit">
-                                            <i data-feather="edit-2" style="width:14px;height:14px;" class="text-primary"></i>
-                                        </a>
-                                        <a class="btn btn-sm bg-danger-subtle btn-delete" role="button"
-                                            data-id="{{ $customer->id }}"
-                                            data-name="{{ $customer->name }}"
-                                            title="Hapus">
-                                            <i data-feather="trash-2" style="width:14px;height:14px;" class="text-danger"></i>
-                                        </a>
+                                        <div class="d-flex justify-content-end gap-1">
+                                            <a class="btn btn-sm bg-primary-subtle" role="button"
+                                                data-bs-toggle="modal" data-bs-target="#modalCustomer"
+                                                data-id="{{ $customer->id }}"
+                                                data-customer_number="{{ $customer->customer_number }}"
+                                                data-name="{{ $customer->name }}"
+                                                data-zone_id="{{ $customer->zone_id }}"
+                                                data-tariff_rate_id="{{ $customer->tariff_rate_id }}"
+                                                data-address="{{ $customer->address }}"
+                                                data-phone="{{ $customer->phone }}"
+                                                data-installation_date="{{ $customer->installation_date?->format('Y-m-d') }}"
+                                                data-initial_meter="{{ $customer->initial_meter }}"
+                                                data-active="{{ $customer->is_active ? '1' : '0' }}"
+                                                title="Edit">
+                                                <i data-feather="edit-2" style="width:14px;height:14px;" class="text-primary"></i>
+                                            </a>
+                                            <a class="btn btn-sm bg-warning-subtle btn-replace-meter" role="button"
+                                                data-bs-toggle="modal" data-bs-target="#modalReplaceMeter"
+                                                data-id="{{ $customer->id }}"
+                                                data-name="{{ $customer->name }}"
+                                                title="Ganti Meteran">
+                                                <i data-feather="refresh-cw" style="width:14px;height:14px;" class="text-warning"></i>
+                                            </a>
+                                            <a class="btn btn-sm bg-danger-subtle btn-delete" role="button"
+                                                data-id="{{ $customer->id }}"
+                                                data-name="{{ $customer->name }}"
+                                                title="Hapus">
+                                                <i data-feather="trash-2" style="width:14px;height:14px;" class="text-danger"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
@@ -286,6 +295,64 @@
     'entity'  => 'Pelanggan',
     'warning' => 'Data tagihan pelanggan yang sudah ada tidak akan terhapus.',
 ])
+
+{{-- Modal Ganti Meteran --}}
+<div class="modal fade" id="modalReplaceMeter" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="formReplaceMeter">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title fs-15">Ganti Meteran — <span id="rm_customer_name"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning bg-warning-subtle border-0 fs-13 py-2 px-3 mb-3">
+                        Gunakan ini jika meteran fisik pelanggan diganti (rusak/error). Pencatatan periode
+                        berikutnya akan memakai angka meteran baru sebagai acuan awal, bukan melanjutkan dari
+                        meteran lama.
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-medium">Angka Akhir Meteran Lama</label>
+                            <input type="text" class="form-control bg-light" id="rm_old_reading" readonly>
+                            <div class="form-text">Diambil otomatis dari pencatatan/penggantian terakhir.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-medium">Angka Awal Meteran Baru <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" id="rm_new_reading_display" class="form-control input-ribuan"
+                                       inputmode="decimal" autocomplete="off" required placeholder="0" data-target="#rm_new_reading">
+                                <input type="hidden" name="new_reading_start" id="rm_new_reading" value="0">
+                                <span class="input-group-text">m³</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-medium">Tanggal Penggantian <span class="text-danger">*</span></label>
+                            <input type="date" name="replaced_at" id="rm_replaced_at" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-medium">Alasan</label>
+                            <input type="text" name="reason" class="form-control" placeholder="cth: Meteran rusak / macet">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-medium">Catatan</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="Opsional"></textarea>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h6 class="fs-13 fw-semibold text-muted mb-2">Riwayat Penggantian</h6>
+                    <div id="rm_history" class="fs-13 text-muted">Memuat...</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-warning px-4">Simpan Penggantian</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('script-bottom')
@@ -363,6 +430,44 @@
         document.getElementById('deleteItemName').textContent = btn.dataset.name;
         document.getElementById('formDelete').action = '/admin/customers/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('modalDelete')).show();
+    });
+
+    // ── Ganti Meteran ──────────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.btn-replace-meter');
+        if (!btn) return;
+        var id = btn.dataset.id;
+
+        document.getElementById('rm_customer_name').textContent = btn.dataset.name;
+        document.getElementById('formReplaceMeter').action = '/admin/customers/' + id + '/replace-meter';
+        document.getElementById('formReplaceMeter').reset();
+        document.getElementById('rm_replaced_at').value = '{{ now()->format('Y-m-d') }}';
+        window.setRibuanValue(document.getElementById('rm_new_reading_display'), '0');
+        document.getElementById('rm_old_reading').value = 'Memuat...';
+        document.getElementById('rm_history').textContent = 'Memuat...';
+
+        fetch('/admin/customers/' + id + '/meter-info')
+            .then(r => r.json())
+            .then(function (d) {
+                document.getElementById('rm_old_reading').value =
+                    Number(d.current_reading).toLocaleString('id-ID', { minimumFractionDigits: 2 }) + ' m³';
+
+                if (!d.history.length) {
+                    document.getElementById('rm_history').textContent = 'Belum pernah diganti.';
+                    return;
+                }
+                var html = '<ul class="list-unstyled mb-0">';
+                d.history.forEach(function (h) {
+                    html += '<li class="mb-1 pb-1 border-bottom">' +
+                        '<strong>' + h.replaced_at + '</strong> — ' +
+                        Number(h.old_reading_final).toLocaleString('id-ID', { minimumFractionDigits: 2 }) + ' m³ → ' +
+                        Number(h.new_reading_start).toLocaleString('id-ID', { minimumFractionDigits: 2 }) + ' m³' +
+                        (h.reason ? ' <span class="text-muted">(' + h.reason + ')</span>' : '') +
+                        '</li>';
+                });
+                html += '</ul>';
+                document.getElementById('rm_history').innerHTML = html;
+            });
     });
 
 }());

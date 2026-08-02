@@ -66,11 +66,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|petugas'
         Route::delete('tariff-rates/{tariffRate}', [TariffRateController::class, 'destroy'])->name('tariff-rates.destroy');
 
         // Pelanggan
-        Route::get('customers/generate-number', [CustomerController::class, 'generateNumber'])->name('customers.generate-number');
-        Route::get('customers',                 [CustomerController::class, 'index'])->name('customers.index');
-        Route::post('customers',                [CustomerController::class, 'store'])->name('customers.store');
-        Route::put('customers/{customer}',      [CustomerController::class, 'update'])->name('customers.update');
-        Route::delete('customers/{customer}',   [CustomerController::class, 'destroy'])->name('customers.destroy');
+        Route::get('customers/generate-number',      [CustomerController::class, 'generateNumber'])->name('customers.generate-number');
+        Route::get('customers',                      [CustomerController::class, 'index'])->name('customers.index');
+        Route::post('customers',                     [CustomerController::class, 'store'])->name('customers.store');
+        Route::put('customers/{customer}',           [CustomerController::class, 'update'])->name('customers.update');
+        Route::delete('customers/{customer}',        [CustomerController::class, 'destroy'])->name('customers.destroy');
+        Route::get('customers/{customer}/meter-info', [CustomerController::class, 'meterInfo'])->name('customers.meter-info');
+        Route::post('customers/{customer}/replace-meter', [CustomerController::class, 'replaceMeter'])->name('customers.replace-meter');
 
         // Pembayaran
         Route::get('payments/history',       [PaymentController::class, 'history'])->name('payments.history');

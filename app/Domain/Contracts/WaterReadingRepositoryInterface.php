@@ -27,6 +27,14 @@ interface WaterReadingRepositoryInterface
     /** Pembacaan terakhir pelanggan (untuk mengisi previous_reading otomatis) */
     public function lastReading(int $customerId): ?WaterReading;
 
+    /**
+     * Angka meteran acuan (baseline) untuk pencatatan periode berikutnya.
+     * Mengambil dari penggantian meteran terbaru jika meteran pernah diganti
+     * setelah pembacaan terakhir, kalau tidak dari current_reading terakhir,
+     * atau initial_meter pelanggan jika belum pernah dicatat sama sekali.
+     */
+    public function baselineReading(int $customerId): float;
+
     /** Cek apakah pelanggan sudah dicatat di periode ini */
     public function existsForPeriod(int $customerId, int $year, int $month, ?int $excludeId = null): bool;
 }

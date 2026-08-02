@@ -97,12 +97,10 @@ class WaterReadingController extends Controller
     public function customerInfo(int $customerId): JsonResponse
     {
         $customer = Customer::with('tariffRate')->findOrFail($customerId);
-        $last     = $this->repo->lastReading($customerId);
-
-        $tariff = $customer->tariffRate;
+        $tariff   = $customer->tariffRate;
 
         return response()->json([
-            'previous_reading' => $last?->current_reading ?? $customer->initial_meter,
+            'previous_reading' => $this->repo->baselineReading($customerId),
             'tariff_name'      => $tariff?->name,
             'zone_name'        => $customer->zone?->name ?? '—',
             'price_per_m3'     => $tariff?->price_per_m3 ?? 0,

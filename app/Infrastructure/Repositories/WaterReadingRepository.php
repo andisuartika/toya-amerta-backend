@@ -6,6 +6,7 @@ use App\Domain\Contracts\WaterReadingRepositoryInterface;
 use App\Domain\DTOs\WaterReading\ImportReadingDTO;
 use App\Domain\DTOs\WaterReading\WaterReadingDTO;
 use App\Models\Customer;
+use App\Models\MeterReplacement;
 use App\Models\WaterReading;
 use Illuminate\Support\Collection;
 
@@ -16,8 +17,7 @@ class WaterReadingRepository implements WaterReadingRepositoryInterface
         $customer = Customer::with('tariffRate')->findOrFail($dto->customer_id);
         $tariff   = $customer->tariffRate;
 
-        $previous = $this->lastReading($dto->customer_id);
-        $previousReading = $previous?->current_reading ?? $customer->initial_meter;
+        $previousReading = $this->baselineReading($dto->customer_id);
 
         $usageM3       = max(0, $dto->current_reading - $previousReading);
         $billableUsage = max($usageM3, $tariff->minimum_usage);
@@ -101,6 +101,31 @@ class WaterReadingRepository implements WaterReadingRepositoryInterface
             ->orderByDesc('period_year')
             ->orderByDesc('period_month')
             ->first();
+    }
+
+    public function baselineReading(int $customerId): float
+    {
+        $lastReplacement = MeterReplacement::where('customer_id', $customerId)
+            ->orderByDesc('replaced_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $lastReadingRecord = $this->lastReading($customerId);
+
+        // Kalau meteran diganti setelah pembacaan terakhir (atau belum pernah dicatat
+        // sama sekali), pakai angka awal meteran baru sebagai acuan berikutnya.
+        if ($lastReplacement && (
+            ! $lastReadingRecord ||
+            $lastReplacement->replaced_at->gte($lastReadingRecord->reading_date)
+        )) {
+            return (float) $lastReplacement->new_reading_start;
+        }
+
+        if ($lastReadingRecord) {
+            return (float) $lastReadingRecord->current_reading;
+        }
+
+        return (float) Customer::findOrFail($customerId)->initial_meter;
     }
 
     public function existsForPeriod(int $customerId, int $year, int $month, ?int $excludeId = null): bool

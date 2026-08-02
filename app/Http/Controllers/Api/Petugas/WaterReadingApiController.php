@@ -206,6 +206,7 @@ class WaterReadingApiController extends Controller
                 'tariff_rate_id'   => $customer->tariff_rate_id,
                 'is_active'        => $customer->is_active,
                 'initial_meter'    => $customer->initial_meter,
+                'next_previous_reading' => $this->repo->baselineReading($customer->id),
                 'registered_date'  => $customer->installation_date?->format('Y-m-d'),
                 'tariff_group'     => $customer->tariffRate?->name,
                 'price_per_m3'     => $customer->tariffRate?->price_per_m3,
